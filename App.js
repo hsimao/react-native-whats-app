@@ -1,6 +1,8 @@
 import 'react-native-gesture-handler'
 import { StyleSheet, LogBox } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { ThemeProvider } from 'styled-components/native'
+import { theme } from './theme'
 import { useEffect, useState } from 'react'
 import * as React from 'react'
 import * as SplashScreen from 'expo-splash-screen'
@@ -52,9 +54,11 @@ export default function App() {
   if (!appIsLoaded) return null
 
   return (
-    <SafeAreaProvider style={styles.container} onLayout={hideSplashScreen}>
-      <AppNavigator />
-    </SafeAreaProvider>
+    <ThemeProvider theme={theme}>
+      <SafeAreaProvider style={styles.container} onLayout={hideSplashScreen}>
+        <AppNavigator />
+      </SafeAreaProvider>
+    </ThemeProvider>
   )
 }
 

@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, Button } from 'react-native'
 
 const ChatListScreen = ({ navigation }) => {
   const handleToSetting = () => {
-    navigation.navigate('ChatSettings')
+    navigation.navigate('ChatScreen')
   }
 
   return (
     <View style={styles.container}>
       <Text>Chat List screen</Text>
-      <Button title="Go to settings" onPress={handleToSetting} />
+      <Button title="Go to Chat Screen" onPress={handleToSetting} />
     </View>
   )
 }
