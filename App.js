@@ -1,9 +1,12 @@
-import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, Text, LogBox } from 'react-native'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import 'react-native-gesture-handler'
+import { StyleSheet, LogBox } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect, useState } from 'react'
+import * as React from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Font from 'expo-font'
+
+import AppNavigator from './navigation/AppNavigator'
 
 // FIX: 修復 Reload SplashScreen 報錯 https://github.com/expo/expo/issues/14824
 LogBox.ignoreLogs(['SplashScreen.show'])
@@ -50,12 +53,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider style={styles.container} onLayout={hideSplashScreen}>
-      <SafeAreaView>
-        <Text style={styles.label}>
-          Open up App.js to start working on your app!
-        </Text>
-        <StatusBar style="auto" />
-      </SafeAreaView>
+      <AppNavigator />
     </SafeAreaProvider>
   )
 }
@@ -64,8 +62,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   label: {
     fontSize: 18,
