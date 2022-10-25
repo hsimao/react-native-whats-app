@@ -21,7 +21,7 @@ const ChatScreen = props => {
 
         <InputArea>
           <IconButtonWrapper>
-            <Feather name="plus" size={24} color={colors.primary} />
+            <Feather name="plus" size={24} color={colors.blue} />
           </IconButtonWrapper>
 
           <TextInputStyle
@@ -33,7 +33,7 @@ const ChatScreen = props => {
           {/* 當 input 尚未輸入文字, 顯示相機按鈕 */}
           {message === '' && (
             <IconButtonWrapper>
-              <Feather name="camera" size={24} color={colors.primary} />
+              <Feather name="camera" size={24} color={colors.blue} />
             </IconButtonWrapper>
           )}
 
@@ -92,7 +92,7 @@ const IconButtonWrapper = styled.TouchableOpacity`
   ${({ round, theme }) =>
     round
       ? `
-  background-color: ${theme.colors.primary};
+  background-color: ${theme.colors.blue};
   padding: 8px;
   border-radius: 50px;
   `
