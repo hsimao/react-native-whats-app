@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components/native'
+import { ScrollView, Platform, KeyboardAvoidingView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import SignInForm from '../components/SignInForm'
@@ -29,26 +30,39 @@ const SwitchText = styled.Text`
   letter-spacing: 0.3px;
 `
 
+// IOS keyboard 顯示時, 將內容向上推效果
+const KeyboardAvoidingViewStyle = styled.KeyboardAvoidingView.attrs({
+  behavior: Platform.OS === 'ios' ? 'height' : undefined,
+  keyboardVerticalOffset: 100,
+})`
+  flex: 1;
+  justify-content: center;
+`
+
 const AuthScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false)
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>
-        {/* Logo */}
-        <LogoWrapper>
-          <LogoImage />
-        </LogoWrapper>
+        <ScrollView>
+          <KeyboardAvoidingViewStyle>
+            {/* Logo */}
+            <LogoWrapper>
+              <LogoImage />
+            </LogoWrapper>
 
-        {/* Form */}
-        {isSignUp ? <SignUpForm /> : <SignInForm />}
+            {/* Form */}
+            {isSignUp ? <SignUpForm /> : <SignInForm />}
 
-        {/* Switch Form */}
-        <SwitchWrapper onPress={() => setIsSignUp(prevValue => !prevValue)}>
-          <SwitchText>
-            {`Switch to ${isSignUp ? 'sign in' : 'sign up'}`}
-          </SwitchText>
-        </SwitchWrapper>
+            {/* Switch Form */}
+            <SwitchWrapper onPress={() => setIsSignUp(prevValue => !prevValue)}>
+              <SwitchText>
+                {`Switch to ${isSignUp ? 'sign in' : 'sign up'}`}
+              </SwitchText>
+            </SwitchWrapper>
+          </KeyboardAvoidingViewStyle>
+        </ScrollView>
       </PageContainer>
     </SafeAreaView>
   )
