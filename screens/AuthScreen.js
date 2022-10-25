@@ -5,6 +5,18 @@ import PageContainer from '../components/PageContainer'
 import SignInForm from '../components/SignInForm'
 import SignUpForm from '../components/SignUpForm'
 
+const LogoWrapper = styled.View`
+  justify-content: center;
+  align-items: center;
+`
+
+const LogoImage = styled.Image.attrs({
+  source: require('../assets/images/logo.png'),
+  resizeMode: 'contain',
+})`
+  width: 50%;
+`
+
 const SwitchWrapper = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
@@ -23,6 +35,11 @@ const AuthScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>
+        {/* Logo */}
+        <LogoWrapper>
+          <LogoImage />
+        </LogoWrapper>
+
         {/* Form */}
         {isSignUp ? <SignUpForm /> : <SignInForm />}
 
