@@ -49,6 +49,9 @@ const ErrorText = styled.Text`
 `
 
 const Input = props => {
+  const handleChange = text => {
+    props.onInputChange(props.id, text)
+  }
   return (
     <Container>
       {/* label */}
@@ -66,7 +69,7 @@ const Input = props => {
         )}
 
         {/* Input */}
-        <EnterInput />
+        <EnterInput {...props} onChangeText={handleChange} />
       </InputWrapper>
 
       {/* Error message */}
