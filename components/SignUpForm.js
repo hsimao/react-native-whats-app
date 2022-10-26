@@ -1,4 +1,5 @@
-import { useReducer, useCallback } from 'react'
+import { useEffect, useReducer, useCallback, useState } from 'react'
+import { Alert } from 'react-native'
 import { FontAwesome, Feather } from '@expo/vector-icons'
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
@@ -23,6 +24,7 @@ const initialState = {
 }
 
 const SignUpForm = () => {
+  const [error, setError] = useState('')
   const [formState, dispatchFormState] = useReducer(reducer, initialState)
 
   const handleInputChange = useCallback(
@@ -45,14 +47,24 @@ const SignUpForm = () => {
     [formState.inputValidities]
   )
 
-  const handleSignUp = () => {
-    signUp({
-      firstName: formState.inputValues.firstName,
-      lastName: formState.inputValues.lastName,
-      email: formState.inputValues.email,
-      password: formState.inputValues.password,
-    })
+  const handleSignUp = async () => {
+    try {
+      await signUp({
+        firstName: formState.inputValues.firstName,
+        lastName: formState.inputValues.lastName,
+        email: formState.inputValues.email,
+        password: formState.inputValues.password,
+      })
+      setError('')
+    } catch (error) {
+      setError(error.message)
+    }
   }
+
+  // show error alert
+  useEffect(() => {
+    error && Alert.alert('An error occurred', error, [{ text: 'Okay' }])
+  }, [error])
 
   return (
     <>

@@ -11,7 +11,7 @@ import * as Font from 'expo-font'
 import AppNavigator from './navigation/AppNavigator'
 
 // FIX: 修復 Reload SplashScreen 報錯 https://github.com/expo/expo/issues/14824
-LogBox.ignoreLogs(['SplashScreen.show'])
+LogBox.ignoreLogs(['SplashScreen.show', 'AsyncStorage has been extracted'])
 
 // 維持啟動畫面
 SplashScreen.preventAutoHideAsync()
