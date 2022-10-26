@@ -18,7 +18,7 @@ const InputWrapper = styled.View`
   width: 100%;
   align-items: center;
   background-color: ${({ theme }) => theme.colors.whiteDark};
-  padding: 15px 10px;
+  padding: 0 10px;
   border-radius: 2px;
 `
 
@@ -27,7 +27,7 @@ const EnterInput = styled.TextInput`
   color: ${({ theme }) => theme.colors.text.primary};
   font-family: 'regular';
   letter-spacing: 0.3px;
-  padding-top: 0;
+  padding: 15px 0;
 `
 
 const styles = StyleSheet.create({
