@@ -1,21 +1,11 @@
 import { FontAwesome, Feather } from '@expo/vector-icons'
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
-import {
-  validateString,
-  validateEmail,
-  validatePassword,
-} from '../utils/validationRule'
+import { validateInput } from '../utils/actions/formActions'
 
 const SignUpForm = () => {
   const handleInputChange = (id, value) => {
-    if (id === 'firstName' || id === 'lastName') {
-      console.log(validateString(id, value))
-    } else if (id === 'email') {
-      console.log('validateEmail', validateEmail(id, value))
-    } else if (id === 'password') {
-      console.log('validatePassword', validatePassword(id, value))
-    }
+    console.log(validateInput(id, value))
   }
 
   return (
