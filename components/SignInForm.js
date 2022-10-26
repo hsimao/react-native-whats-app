@@ -24,6 +24,14 @@ const SignInForm = () => {
     [dispatchFormState]
   )
 
+  const getErrorById = useCallback(
+    id => {
+      const errorList = formState.inputValidities[id]
+      return errorList && errorList[0]
+    },
+    [formState.inputValidities]
+  )
+
   return (
     <>
       <Input
@@ -34,6 +42,7 @@ const SignInForm = () => {
         onInputChange={handleInputChange}
         autoCapitalize="none"
         keyboardType="email-address"
+        errorText={getErrorById('email')}
       />
 
       <Input
@@ -44,6 +53,7 @@ const SignInForm = () => {
         onInputChange={handleInputChange}
         autoCapitalize="none"
         secureTextEntry
+        errorText={getErrorById('password')}
       />
 
       <SubmitButton

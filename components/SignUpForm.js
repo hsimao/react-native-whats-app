@@ -26,6 +26,14 @@ const SignUpForm = () => {
     [dispatchFormState]
   )
 
+  const getErrorById = useCallback(
+    id => {
+      const errorList = formState.inputValidities[id]
+      return errorList && errorList[0]
+    },
+    [formState.inputValidities]
+  )
+
   return (
     <>
       <Input
@@ -35,6 +43,7 @@ const SignUpForm = () => {
         iconPack={FontAwesome}
         onInputChange={handleInputChange}
         autoCapitalize="none"
+        errorText={getErrorById('firstName')}
       />
 
       <Input
@@ -44,6 +53,7 @@ const SignUpForm = () => {
         iconPack={FontAwesome}
         onInputChange={handleInputChange}
         autoCapitalize="none"
+        errorText={getErrorById('lastName')}
       />
 
       <Input
@@ -54,6 +64,7 @@ const SignUpForm = () => {
         onInputChange={handleInputChange}
         autoCapitalize="none"
         keyboardType="email-address"
+        errorText={getErrorById('email')}
       />
 
       <Input
@@ -64,6 +75,7 @@ const SignUpForm = () => {
         onInputChange={handleInputChange}
         autoCapitalize="none"
         secureTextEntry
+        errorText={getErrorById('password')}
       />
 
       <SubmitButton
