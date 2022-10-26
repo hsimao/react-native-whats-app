@@ -3,9 +3,16 @@ import { FontAwesome, Feather } from '@expo/vector-icons'
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
 import { validateInput } from '../utils/actions/formActions'
+import { signUp } from '../utils/actions/authActions'
 import { reducer } from '../utils/reducers/formReducer'
 
 const initialState = {
+  inputValues: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  },
   inputValidities: {
     firstName: false,
     lastName: false,
@@ -21,7 +28,11 @@ const SignUpForm = () => {
   const handleInputChange = useCallback(
     (id, value) => {
       const result = validateInput(id, value)
-      dispatchFormState({ id, validationResult: result })
+      dispatchFormState({
+        inputId: id,
+        inputValue: value,
+        validationResult: result,
+      })
     },
     [dispatchFormState]
   )
@@ -33,6 +44,15 @@ const SignUpForm = () => {
     },
     [formState.inputValidities]
   )
+
+  const handleSignUp = () => {
+    signUp({
+      firstName: formState.inputValues.firstName,
+      lastName: formState.inputValues.lastName,
+      email: formState.inputValues.email,
+      password: formState.inputValues.password,
+    })
+  }
 
   return (
     <>
@@ -81,7 +101,7 @@ const SignUpForm = () => {
       <SubmitButton
         title="Sign up"
         style={{ marginTop: 20 }}
-        onPress={() => console.log('onPress')}
+        onPress={handleSignUp}
         disabled={!formState.formIsValid}
       />
     </>
