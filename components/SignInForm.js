@@ -3,7 +3,7 @@ import { Feather } from '@expo/vector-icons'
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
 import { validateInput } from '../utils/actions/formActions'
-import { signUp } from '../utils/actions/authActions'
+import { signUp } from '../services/auth/signUp'
 import { reducer } from '../utils/reducers/formReducer'
 
 const initialState = {

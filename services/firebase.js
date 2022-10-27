@@ -6,6 +6,7 @@ import {
   messagingSenderId,
   appId,
   measurementId,
+  databaseURL,
 } from '@env'
 import { initializeApp } from 'firebase/app'
 
@@ -17,6 +18,7 @@ const firebaseConfig = {
   messagingSenderId,
   appId,
   measurementId,
+  databaseURL,
 }
 
 export const getFirebaseApp = () => initializeApp(firebaseConfig)
