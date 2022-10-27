@@ -1,11 +1,12 @@
 import { useEffect, useReducer, useCallback, useState } from 'react'
-import { Alert } from 'react-native'
+import { Alert, ActivityIndicator } from 'react-native'
 import { FontAwesome, Feather } from '@expo/vector-icons'
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
 import { validateInput } from '../utils/actions/formActions'
 import { signUp } from '../utils/actions/authActions'
 import { reducer } from '../utils/reducers/formReducer'
+import { colors } from '../theme/colors'
 
 const initialState = {
   inputValues: {
@@ -25,6 +26,7 @@ const initialState = {
 
 const SignUpForm = () => {
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const [formState, dispatchFormState] = useReducer(reducer, initialState)
 
   const handleInputChange = useCallback(
@@ -49,15 +51,19 @@ const SignUpForm = () => {
 
   const handleSignUp = async () => {
     try {
+      setError('')
+      setIsLoading(true)
+
       await signUp({
         firstName: formState.inputValues.firstName,
         lastName: formState.inputValues.lastName,
         email: formState.inputValues.email,
         password: formState.inputValues.password,
       })
-      setError('')
     } catch (error) {
       setError(error.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -110,12 +116,20 @@ const SignUpForm = () => {
         errorText={getErrorById('password')}
       />
 
-      <SubmitButton
-        title="Sign up"
-        style={{ marginTop: 20 }}
-        onPress={handleSignUp}
-        disabled={!formState.formIsValid}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size={'small'}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <SubmitButton
+          title="Sign up"
+          style={{ marginTop: 20 }}
+          onPress={handleSignUp}
+          disabled={!formState.formIsValid}
+        />
+      )}
     </>
   )
 }
