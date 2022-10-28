@@ -1,12 +1,9 @@
-import { getFirebaseApp } from '../firebase'
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
+import { auth } from '../firebase'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { createUser } from '../users/createUser'
 
 export const signUp = async ({ firstName, lastName, email, password }) => {
   try {
-    const app = getFirebaseApp()
-    const auth = getAuth(app)
-
     const result = await createUserWithEmailAndPassword(auth, email, password)
     const { uid, stsTokenManager } = result.user
     const { accessToken } = stsTokenManager
