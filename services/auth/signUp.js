@@ -8,14 +8,17 @@ export const signUp = async ({ firstName, lastName, email, password }) => {
     const auth = getAuth(app)
 
     const result = await createUserWithEmailAndPassword(auth, email, password)
-    const { uid } = result.user
+    const { uid, stsTokenManager } = result.user
+    const { accessToken } = stsTokenManager
 
-    return await createUser({
+    const userData = await createUser({
       firstName,
       lastName,
       email,
       userId: uid,
     })
+
+    return { ...userData, token: accessToken }
   } catch (error) {
     console.error(error)
     // errorCode https://firebase.google.com/docs/auth/admin/errors

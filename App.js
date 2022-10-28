@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 import * as React from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Font from 'expo-font'
+import { Provider } from 'react-redux'
+import { store } from './store/store'
 
 import AppNavigator from './navigation/AppNavigator'
 
@@ -54,11 +56,13 @@ export default function App() {
   if (!appIsLoaded) return null
 
   return (
-    <ThemeProvider theme={theme}>
-      <SafeAreaProvider style={styles.container} onLayout={hideSplashScreen}>
-        <AppNavigator />
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <SafeAreaProvider style={styles.container} onLayout={hideSplashScreen}>
+          <AppNavigator />
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </Provider>
   )
 }
 
