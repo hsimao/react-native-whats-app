@@ -1,24 +1,19 @@
 import { auth } from '../firebase'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { createUser } from '../users/createUser'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { getUser } from '../users/getUser'
 import { saveUserDataToStorage } from './utils'
 
-export const signUp = async ({ firstName, lastName, email, password }) => {
+export const signIn = async ({ email, password }) => {
   try {
-    // create auth user
-    const result = await createUserWithEmailAndPassword(auth, email, password)
+    // signin
+    const result = await signInWithEmailAndPassword(auth, email, password)
     const { uid, stsTokenManager } = result.user
     const { accessToken, expirationTime } = stsTokenManager
 
     const formatExpiryDate = new Date(expirationTime)
 
-    // save user to database
-    const userData = await createUser({
-      firstName,
-      lastName,
-      email,
-      userId: uid,
-    })
+    // 從 database 取得用戶資料
+    const userData = await getUser(uid)
 
     // save user data 到用戶裝置
     saveUserDataToStorage({
@@ -32,8 +27,9 @@ export const signUp = async ({ firstName, lastName, email, password }) => {
     console.error(error)
     // errorCode https://firebase.google.com/docs/auth/admin/errors
     const message =
-      error.code === 'auth/email-already-in-use'
-        ? 'This email is already in use'
+      error.code === 'auth/user-not-found' ||
+      error.code === 'auth/wrong-password'
+        ? 'The email or password was incorrect'
         : 'Something went wrong.'
 
     throw new Error(message)

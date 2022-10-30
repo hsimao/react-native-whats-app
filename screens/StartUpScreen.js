@@ -24,7 +24,7 @@ const StartUpScreen = () => {
 
       // format storageUserData
       const parseUserData = JSON.parse(storageUserData)
-      const { token, userId, expirtyDate: expiryDateString } = parseUserData
+      const { token, userId, expiryDate: expiryDateString } = parseUserData
       const expiryDate = new Date(expiryDateString)
 
       // 檢查是否過期, user 資料是否完整
@@ -34,8 +34,9 @@ const StartUpScreen = () => {
 
       // 從 database 取得用戶資料
       const userData = await getUser(userId)
-      // 用戶資料更新到 redux
-      if (userData) authenticate({ ...userData, token })
+
+      // 有取得用戶資料就更新到 redux
+      userData ? authenticate({ ...userData, token }) : setDidTryAutoLogin()
     }
     tryLogin()
   }, [])

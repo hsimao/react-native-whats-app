@@ -51,7 +51,7 @@ const SignUpForm = () => {
     [formState.inputValidities]
   )
 
-  const handleSignUp = async () => {
+  const handleSignUp = useCallback(async () => {
     try {
       setError('')
       setIsLoading(true)
@@ -69,7 +69,7 @@ const SignUpForm = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [formState])
 
   // show error alert
   useEffect(() => {
