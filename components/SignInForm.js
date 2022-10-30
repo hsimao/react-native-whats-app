@@ -22,7 +22,7 @@ const initialState = {
 }
 
 const SignInForm = () => {
-  const { authenticate } = useActions()
+  const { authenticate, setLogoutTimer, logout } = useActions()
 
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -57,7 +57,14 @@ const SignInForm = () => {
         email: formState.inputValues.email,
         password: formState.inputValues.password,
       })
+
+      // save to store
       authenticate(userData)
+
+      // token 到期登出
+      setLogoutTimer(
+        setTimeout(() => logout(), userData.millisecondsUntilExpiry)
+      )
     } catch (error) {
       console.log('error', error)
       setError(error.message)

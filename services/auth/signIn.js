@@ -11,6 +11,9 @@ export const signIn = async ({ email, password }) => {
     const { accessToken, expirationTime } = stsTokenManager
 
     const formatExpiryDate = new Date(expirationTime)
+    const timeNow = new Date()
+    // 到期時間, 毫秒單位
+    const millisecondsUntilExpiry = formatExpiryDate - timeNow
 
     // 從 database 取得用戶資料
     const userData = await getUser(uid)
@@ -22,7 +25,7 @@ export const signIn = async ({ email, password }) => {
       expiryDate: formatExpiryDate,
     })
 
-    return { ...userData, token: accessToken }
+    return { ...userData, token: accessToken, millisecondsUntilExpiry }
   } catch (error) {
     console.error(error)
     // errorCode https://firebase.google.com/docs/auth/admin/errors

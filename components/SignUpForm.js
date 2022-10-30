@@ -26,7 +26,7 @@ const initialState = {
 }
 
 const SignUpForm = () => {
-  const { authenticate } = useActions()
+  const { authenticate, logout, setLogoutTimer } = useActions()
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [formState, dispatchFormState] = useReducer(reducer, initialState)
@@ -62,7 +62,16 @@ const SignUpForm = () => {
         email: formState.inputValues.email,
         password: formState.inputValues.password,
       })
+
+      if (!userData) return
+
+      // save to store
       authenticate(userData)
+
+      // token 到期登出
+      setLogoutTimer(
+        setTimeout(() => logout(), userData.millisecondsUntilExpiry)
+      )
     } catch (error) {
       console.log('error', error)
       setError(error.message)
