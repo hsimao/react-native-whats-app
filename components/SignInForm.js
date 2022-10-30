@@ -9,16 +9,18 @@ import { reducer } from '../utils/reducers/formReducer'
 import { useActions } from '../store/hooks'
 import { colors } from '../theme/colors'
 
+const isTestMode = true
+
 const initialState = {
   inputValues: {
-    email: '',
-    password: '',
+    email: isTestMode ? 'mars@gmail.com' : '',
+    password: isTestMode ? '123456' : '',
   },
   inputValidities: {
-    email: false,
-    password: false,
+    email: isTestMode,
+    password: isTestMode,
   },
-  formIsValid: false,
+  formIsValid: isTestMode,
 }
 
 const SignInForm = () => {
@@ -85,6 +87,7 @@ const SignInForm = () => {
         label="Email"
         icon="mail"
         iconPack={Feather}
+        value={formState.inputValues.email}
         onInputChange={handleInputChange}
         autoCapitalize="none"
         keyboardType="email-address"
@@ -96,6 +99,7 @@ const SignInForm = () => {
         label="Password"
         icon="lock"
         iconPack={Feather}
+        value={formState.inputValues.password}
         onInputChange={handleInputChange}
         autoCapitalize="none"
         secureTextEntry
