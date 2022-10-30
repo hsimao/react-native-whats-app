@@ -14,7 +14,9 @@ export const authSlice = createSlice({
       state.token = payload.token
       state.userData = payload
     },
-    setDidTryAutoLogin: state => (state.didTryAutoLogin = true),
+    setDidTryAutoLogin: state => {
+      state.didTryAutoLogin = true
+    },
   },
 })
 
