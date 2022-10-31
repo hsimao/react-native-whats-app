@@ -10,8 +10,11 @@ import { validateInput } from '../utils/actions/formActions'
 import { reducer } from '../utils/reducers/formReducer'
 import { colors } from '../theme/colors'
 import { updateUser } from '../services/users/updateUser'
+import { useActions } from '../store/hooks'
 
 const SettingsScreen = () => {
+  const { logout } = useActions()
+
   const userData = useSelector(state => state.auth.userData)
 
   const initialState = {
@@ -129,12 +132,19 @@ const SettingsScreen = () => {
         />
       ) : (
         <SubmitButton
-          title="Sign In"
+          title="Save"
           style={{ marginTop: 20 }}
           onPress={handleSubmit}
           disabled={!formState.formIsValid}
         />
       )}
+
+      <SubmitButton
+        title="Logout"
+        style={{ marginTop: 20 }}
+        color={colors.red}
+        onPress={logout}
+      />
     </PageContainer>
   )
 }
