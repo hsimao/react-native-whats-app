@@ -1,5 +1,11 @@
-import React, { useState, useCallback, useReducer, useEffect } from 'react'
-import { Alert, ActivityIndicator } from 'react-native'
+import React, {
+  useState,
+  useCallback,
+  useReducer,
+  useEffect,
+  useMemo,
+} from 'react'
+import { Alert, ActivityIndicator, Text, View } from 'react-native'
 import { useSelector } from 'react-redux'
 import { FontAwesome, Feather } from '@expo/vector-icons'
 import PageContainer from '../components/PageContainer'
@@ -13,16 +19,20 @@ import { updateUser } from '../services/users/updateUser'
 import { useActions } from '../store/hooks'
 
 const SettingsScreen = () => {
-  const { logout } = useActions()
+  const { logout, updateUserData } = useActions()
 
   const userData = useSelector(state => state.auth.userData)
+  const firstName = userData.firstName || ''
+  const lastName = userData.lastName || ''
+  const email = userData.email || ''
+  const about = userData.about || ''
 
   const initialState = {
     inputValues: {
-      firstName: userData.firstName || '',
-      lastName: userData.lastName || '',
-      email: userData.email || '',
-      about: userData.about || '',
+      firstName,
+      lastName,
+      email,
+      about,
     },
     inputValidities: {
       firstName: undefined,
@@ -35,7 +45,22 @@ const SettingsScreen = () => {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [formState, dispatchFormState] = useReducer(reducer, initialState)
+
+  const hasChange = useMemo(() => {
+    const currentValues = formState.inputValues
+    return (
+      currentValues.firstName !== firstName ||
+      currentValues.lastName !== lastName ||
+      currentValues.email !== email ||
+      currentValues.about !== about
+    )
+  }, [formState, userData])
+
+  const showSaveButton = useMemo(() => {
+    return !isLoading && hasChange
+  }, [hasChange, isLoading])
 
   const handleInputChange = useCallback(
     (id, value) => {
@@ -61,7 +86,12 @@ const SettingsScreen = () => {
     try {
       setError('')
       setIsLoading(true)
+
       await updateUser(userData.userId, formState.inputValues)
+      updateUserData(formState.inputValues)
+
+      setShowSuccessMessage(true)
+      setTimeout(() => setShowSuccessMessage(false), 3000)
     } catch (error) {
       console.log('error', error)
       setError(error.message)
@@ -124,20 +154,28 @@ const SettingsScreen = () => {
         errorText={getErrorById('about')}
       />
 
-      {isLoading ? (
-        <ActivityIndicator
-          size={'small'}
-          color={colors.primary}
-          style={{ marginTop: 10 }}
-        />
-      ) : (
-        <SubmitButton
-          title="Save"
-          style={{ marginTop: 20 }}
-          onPress={handleSubmit}
-          disabled={!formState.formIsValid}
-        />
-      )}
+      <View style={{ marginTop: 20 }}>
+        {showSuccessMessage && (
+          <Text style={{ textAlign: 'center' }}>Saved!</Text>
+        )}
+
+        {isLoading && (
+          <ActivityIndicator
+            size={'small'}
+            color={colors.primary}
+            style={{ marginTop: 10 }}
+          />
+        )}
+
+        {showSaveButton && (
+          <SubmitButton
+            title="Save"
+            style={{ marginTop: 20 }}
+            onPress={handleSubmit}
+            disabled={!formState.formIsValid}
+          />
+        )}
+      </View>
 
       <SubmitButton
         title="Logout"

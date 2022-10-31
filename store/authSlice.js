@@ -23,6 +23,9 @@ export const authSlice = createSlice({
     setLogoutTimer: (state, action) => {
       state.logoutTimer = action.payload
     },
+    updateUserData: (state, action) => {
+      state.userData = { ...state.userData, ...action.payload }
+    },
     logout: state => {
       clearTimeout(state.logoutTimer)
       state.token = null
@@ -31,10 +34,5 @@ export const authSlice = createSlice({
     },
   },
 })
-
-export const authenticate = authSlice.actions.authenticate
-export const setDidTryAutoLogin = authSlice.actions.setDidTryAutoLogin
-export const setLogoutTimer = authSlice.actions.setLogoutTimer
-export const logout = authSlice.actions.logout
 
 export default authSlice.reducer
