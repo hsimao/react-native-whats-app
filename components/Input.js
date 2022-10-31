@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styled from 'styled-components/native'
 import { StyleSheet } from 'react-native'
 import { colors } from '../theme/colors'
@@ -49,9 +50,13 @@ const ErrorText = styled.Text`
 `
 
 const Input = props => {
+  const [value, setValue] = useState(props.initialValue)
+
   const handleChange = text => {
+    setValue(text)
     props.onInputChange(props.id, text)
   }
+
   return (
     <Container>
       {/* label */}
@@ -69,7 +74,7 @@ const Input = props => {
         )}
 
         {/* Input */}
-        <EnterInput {...props} onChangeText={handleChange} />
+        <EnterInput {...props} value={value} onChangeText={handleChange} />
       </InputWrapper>
 
       {/* Error message */}

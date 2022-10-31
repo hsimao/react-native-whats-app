@@ -18,9 +18,21 @@ const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 
 // TabNavigator
+// NOTE: 隱藏 header 底線 https://stackoverflow.com/questions/68921459/remove-headers-border-bottom-line-from-bottom-tab-navigator-react-navigation-v
 const TabNavigator = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerTitle: '' }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerTitle: '',
+        headerStyle: {
+          backgroundColor: 'rgb(242,242,242)',
+          borderBottomColor: 'transparent',
+          shadowColor: 'transparent',
+          borderBottomWidth: 0,
+          elevation: 0,
+        },
+      }}
+    >
       <Tab.Screen
         name="Chats"
         component={ChatListScreen}
