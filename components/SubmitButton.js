@@ -7,6 +7,7 @@ const Container = styled.TouchableOpacity`
   border-radius: 30px;
   justify-content: center;
   align-items: center;
+  width: 100%;
 `
 
 const SubmitText = styled.Text`

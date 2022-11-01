@@ -110,7 +110,7 @@ const SettingsScreen = () => {
     <PageContainer>
       <PageTitle>Settings</PageTitle>
 
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
         <ProfileImage />
 
         <Input
