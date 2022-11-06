@@ -12,7 +12,7 @@ export const launchImagePicker = async () => {
     // 寬高比
     aspect: [1, 1],
     // 質量, 預設 0.2
-    quality: 1,
+    quality: 0.2,
   })
 
   if (!result.cancelled) {

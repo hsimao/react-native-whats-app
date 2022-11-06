@@ -4,6 +4,7 @@ import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'
 import { launchImagePicker } from '../utils/imagePicker'
 import userImage from '../assets/images/userImage.jpeg'
+import { uploadAvatar } from '../services/upload/uploadAvatar'
 
 const Image = styled.Image.attrs({
   resizeMode: 'contain',
@@ -33,8 +34,13 @@ const ProfileImage = props => {
       const tempUri = await launchImagePicker()
       if (!tempUri) reutrn
 
-      // update image
-      setImage({ uri: tempUri })
+      // upload image to firebase
+      const uploadUrl = await uploadAvatar(tempUri)
+      if (!uploadUrl) {
+        throw new Error('Could not upload image')
+      }
+
+      setImage({ uri: uploadUrl })
     } catch (error) {
       console.log(error)
     }
