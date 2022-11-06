@@ -3,8 +3,11 @@ import { db } from '../firebase'
 
 export const updateUser = async (userId, userData) => {
   try {
-    const fullName = `${userData.firstName} ${userData.lastName}`.toLowerCase()
-    userData.fullName = fullName
+    if (userData.firstName && userData.lastName) {
+      const fullName =
+        `${userData.firstName} ${userData.lastName}`.toLowerCase()
+      userData.fullName = fullName
+    }
 
     const dbRef = ref(db)
     const userRef = child(dbRef, `users/${userId}`)

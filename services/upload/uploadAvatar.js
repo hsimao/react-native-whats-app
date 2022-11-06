@@ -1,9 +1,13 @@
 import { storage } from '../firebase'
 import { uploadBytesResumable, getDownloadURL, ref } from 'firebase/storage'
-import uuid from 'react-native-uuid'
 
-// 上傳照片到 firebase
-export const uploadAvatar = async uri => {
+/**
+ * 上傳照片到 firebase
+ * @param {*} userId
+ * @param {*} uri
+ * @returns firebase storage url
+ */
+export const uploadAvatar = async (userId, uri) => {
   const blob = await new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
 
@@ -22,7 +26,7 @@ export const uploadAvatar = async uri => {
   })
 
   const pathFolder = 'avatar'
-  const storageRef = ref(storage, `${pathFolder}/${uuid.v4()}`)
+  const storageRef = ref(storage, `${pathFolder}/${userId}`)
 
   // upload to firebase
   await uploadBytesResumable(storageRef, blob)

@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { TouchableOpacity } from 'react-native'
 import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'
 import { launchImagePicker } from '../utils/imagePicker'
 import userImage from '../assets/images/userImage.jpeg'
 import { uploadAvatar } from '../services/upload/uploadAvatar'
+import { updateUser } from '../services/users/updateUser'
 
 const Image = styled.Image.attrs({
   resizeMode: 'contain',
@@ -25,30 +26,38 @@ const EditIcon = styled.View`
 `
 
 const ProfileImage = props => {
+  const { userId, updateUserData, uri, size } = props
+
   // default image
-  const source = props.uri ? { uri: props.uri } : userImage
+  const source = uri ? { uri } : userImage
   const [image, setImage] = useState(source)
 
-  const pickImage = async () => {
+  const pickImage = useCallback(async () => {
     try {
       const tempUri = await launchImagePicker()
-      if (!tempUri) reutrn
+      if (!tempUri) return
 
-      // upload image to firebase
-      const uploadUrl = await uploadAvatar(tempUri)
+      // upload image to firebase storage
+      const uploadUrl = await uploadAvatar(userId, tempUri)
       if (!uploadUrl) {
         throw new Error('Could not upload image')
       }
+
+      // image url save to firebase database
+      await updateUser(userId, { avatar: uploadUrl })
+
+      // update new avatar to redux store
+      if (updateUserData) updateUserData({ avatar: uploadUrl })
 
       setImage({ uri: uploadUrl })
     } catch (error) {
       console.log(error)
     }
-  }
+  }, [userId, updateUserData])
 
   return (
     <TouchableOpacity onPress={pickImage}>
-      <Image source={image} size={props.size} />
+      <Image source={image} size={size} />
 
       <EditIcon>
         <FontAwesome name="pencil" size={15} color="black" />

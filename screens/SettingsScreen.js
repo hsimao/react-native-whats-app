@@ -111,7 +111,11 @@ const SettingsScreen = () => {
       <PageTitle>Settings</PageTitle>
 
       <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-        <ProfileImage />
+        <ProfileImage
+          userId={userData.userId}
+          uri={userData.avatar}
+          updateUserData={updateUserData}
+        />
 
         <Input
           id="firstName"
