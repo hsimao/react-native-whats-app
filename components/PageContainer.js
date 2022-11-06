@@ -6,7 +6,7 @@ const Container = styled.View`
 `
 
 const PageContainer = props => {
-  return <Container>{props.children}</Container>
+  return <Container {...props}>{props.children}</Container>
 }
 
 export default PageContainer
