@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'
@@ -24,14 +24,25 @@ const EditIcon = styled.View`
 `
 
 const ProfileImage = props => {
-  launchImagePicker()
-  const pickImage = () => {
-    console.log('pickImage')
+  // default image
+  const source = props.uri ? { uri: props.uri } : userImage
+  const [image, setImage] = useState(source)
+
+  const pickImage = async () => {
+    try {
+      const tempUri = await launchImagePicker()
+      if (!tempUri) reutrn
+
+      // update image
+      setImage({ uri: tempUri })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
     <TouchableOpacity onPress={pickImage}>
-      <Image source={userImage} size={props.size} />
+      <Image source={image} size={props.size} />
 
       <EditIcon>
         <FontAwesome name="pencil" size={15} color="black" />
