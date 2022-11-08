@@ -1,7 +1,7 @@
 import { ref, get, child } from 'firebase/database'
 import { db } from '../firebase'
 
-export const getUser = async userId => {
+export const fetchUser = async userId => {
   try {
     const dbRef = ref(db)
     const userRef = child(dbRef, `users/${userId}`)

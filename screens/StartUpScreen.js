@@ -4,7 +4,7 @@ import styled from 'styled-components/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useActions } from '../store/hooks'
 import { colors } from '../theme/colors'
-import { getUser } from '../services/users/getUser'
+import { fetchUser } from '../services/users/fetchUser'
 
 const Container = styled.View`
   flex: 1;
@@ -33,7 +33,7 @@ const StartUpScreen = () => {
       }
 
       // 從 database 取得用戶資料
-      const userData = await getUser(userId)
+      const userData = await fetchUser(userId)
 
       // 有取得用戶資料就更新到 redux
       userData ? authenticate({ ...userData, token }) : setDidTryAutoLogin()

@@ -1,6 +1,6 @@
 import { auth } from '../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { getUser } from '../users/getUser'
+import { fetchUser } from '../users/fetchUser'
 import { saveUserDataToStorage } from './utils'
 
 export const signIn = async ({ email, password }) => {
@@ -16,7 +16,7 @@ export const signIn = async ({ email, password }) => {
     const millisecondsUntilExpiry = formatExpiryDate - timeNow
 
     // 從 database 取得用戶資料
-    const userData = await getUser(uid)
+    const userData = await fetchUser(uid)
 
     // save user data 到用戶裝置
     saveUserDataToStorage({
