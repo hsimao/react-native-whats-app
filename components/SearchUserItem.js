@@ -32,10 +32,10 @@ const Subtitle = styled.Text.attrs({
   letter-spacing: 0.3px;
 `
 
-const SearchUserItem = ({ user }) => {
+const SearchUserItem = ({ user, onPress }) => {
   const { fullName, about, avatar } = user
   return (
-    <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={onPress}>
       <Container>
         <ProfileImage uri={avatar} size={40} />
 

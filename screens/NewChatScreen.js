@@ -99,6 +99,11 @@ const NewChatScreen = ({ navigation }) => {
     return () => clearTimeout(timer)
   }, [search])
 
+  // click user
+  const handleClickUser = userId => {
+    navigation.navigate('ChatList', { selectedUserId: userId })
+  }
+
   return (
     <PageContainer>
       {/* Search */}
@@ -135,7 +140,10 @@ const NewChatScreen = ({ navigation }) => {
         <FlatList
           data={Object.keys(users)}
           renderItem={itemData => (
-            <SearchUserItem user={users[itemData.item]} />
+            <SearchUserItem
+              user={users[itemData.item]}
+              onPress={() => handleClickUser(itemData.item)}
+            />
           )}
         />
       )}

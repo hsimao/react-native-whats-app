@@ -26,7 +26,6 @@ const TabNavigator = () => {
       screenOptions={{
         headerTitle: '',
         headerStyle: {
-          backgroundColor: 'rgb(242,242,242)',
           borderBottomColor: 'transparent',
           shadowColor: 'transparent',
           borderBottomWidth: 0,
@@ -35,7 +34,7 @@ const TabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="Chats"
+        name="ChatList"
         component={ChatListScreen}
         options={{
           tabBarLabel: 'Chats',

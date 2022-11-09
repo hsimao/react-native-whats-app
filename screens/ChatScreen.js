@@ -8,6 +8,9 @@ import { colors } from '../theme/colors'
 const ChatScreen = props => {
   const [message, setMessage] = useState('')
 
+  const chatData = props.route?.params?.newChatData
+  console.log('chatData', chatData)
+
   const onChangeText = text => setMessage(text)
 
   const handleSendMessage = useCallback(() => {
