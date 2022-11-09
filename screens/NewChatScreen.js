@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import styled from 'styled-components/native'
-import { Text, FlatList, ActivityIndicator } from 'react-native'
+import { FlatList, ActivityIndicator } from 'react-native'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import { FontAwesome } from '@expo/vector-icons'
 import PageContainer from '../components/PageContainer'
 import CustomHeaderButton from '../components/CustomHeaderButtons'
+import SearchUserItem from '../components/SearchUserItem'
 import { colors } from '../theme/colors'
 import { fetchUsers } from '../services/users/fetchUsers'
 
@@ -89,7 +90,7 @@ const NewChatScreen = ({ navigation }) => {
     const hasUsers = !!Object.keys(usersResult).length
     hasUsers ? setNoResultsFound(false) : setNoResultsFound(true)
 
-    setUsers(usersResult)
+    setUsers(hasUsers ? usersResult : {})
     setIsLoading(false)
   }
 
@@ -133,10 +134,9 @@ const NewChatScreen = ({ navigation }) => {
       {showUserList && (
         <FlatList
           data={Object.keys(users)}
-          renderItem={itemData => {
-            const userId = itemData.item
-            return <Text>${userId}</Text>
-          }}
+          renderItem={itemData => (
+            <SearchUserItem user={users[itemData.item]} />
+          )}
         />
       )}
     </PageContainer>

@@ -115,6 +115,7 @@ const SettingsScreen = () => {
           userId={userData.userId}
           uri={userData.avatar}
           updateUserData={updateUserData}
+          edit
         />
 
         <Input

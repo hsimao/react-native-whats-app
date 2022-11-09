@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react'
-import { TouchableOpacity } from 'react-native'
+import React, { useState, useMemo } from 'react'
+import { TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'
 import { launchImagePicker } from '../utils/imagePicker'
@@ -42,16 +42,18 @@ const EditIcon = styled.View`
 `
 
 const ProfileImage = props => {
-  const { userId, updateUserData, uri, size } = props
+  const { userId, updateUserData, uri, size, edit } = props
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const showEdit = useMemo(() => edit && !isLoading, [edit, isLoading])
 
   // default image
   const source = uri ? { uri } : userImage
   const [image, setImage] = useState(source)
 
-  const pickImage = useCallback(async () => {
-    if (isLoading) return
+  const pickImage = async () => {
+    if (isLoading || !edit) return
 
     try {
       const tempUri = await launchImagePicker()
@@ -73,13 +75,16 @@ const ProfileImage = props => {
 
       setImage({ uri: uploadUrl })
     } catch (error) {
-      setIsLoading(false)
       console.log(error)
+    } finally {
+      setIsLoading(false)
     }
-  }, [userId, updateUserData])
+  }
+
+  const Contaienr = edit ? TouchableOpacity : View
 
   return (
-    <TouchableOpacity onPress={pickImage}>
+    <Contaienr onPress={pickImage}>
       <ImageContainer size={size}>
         <Image
           source={image}
@@ -96,10 +101,12 @@ const ProfileImage = props => {
         ) : null}
       </ImageContainer>
 
-      <EditIcon>
-        <FontAwesome name="pencil" size={15} color="black" />
-      </EditIcon>
-    </TouchableOpacity>
+      {showEdit && (
+        <EditIcon>
+          <FontAwesome name="pencil" size={15} color="black" />
+        </EditIcon>
+      )}
+    </Contaienr>
   )
 }
 
