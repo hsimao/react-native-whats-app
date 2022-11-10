@@ -1,15 +1,33 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { Platform } from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
 import { colors } from '../theme/colors'
+import { useSelector } from 'react-redux'
 
-const ChatScreen = props => {
+const ChatScreen = ({ route, navigation }) => {
+  const [chatUsers, setChatUsers] = useState([])
   const [message, setMessage] = useState('')
 
-  const chatData = props.route?.params?.newChatData
-  console.log('chatData', chatData)
+  const tempUsers = useSelector(state => state.user.tempUsers)
+  const selfUserData = useSelector(state => state.auth.userData)
+
+  const chatData = route?.params?.newChatData
+  useEffect(() => setChatUsers(chatData.users), [chatUsers])
+
+  const getChatTitle = useMemo(() => {
+    const otherUserId = chatUsers.find(uid => uid !== selfUserData.userId)
+    const otherUserData = tempUsers[otherUserId]
+    return otherUserData
+      ? `${otherUserData.firstName} ${otherUserData.lastName}`
+      : ''
+  }, [selfUserData, chatUsers])
+
+  // update header title
+  useEffect(() => {
+    navigation.setOptions({ headerTitle: getChatTitle })
+  }, [getChatTitle])
 
   const onChangeText = text => setMessage(text)
 

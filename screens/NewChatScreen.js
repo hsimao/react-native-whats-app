@@ -8,6 +8,8 @@ import CustomHeaderButton from '../components/CustomHeaderButtons'
 import SearchUserItem from '../components/SearchUserItem'
 import { colors } from '../theme/colors'
 import { fetchUsers } from '../services/users/fetchUsers'
+import { useActions } from '../store/hooks'
+import { useSelector } from 'react-redux'
 
 const SearchContainer = styled.View`
   flex-direction: row;
@@ -46,6 +48,10 @@ const NewChatScreen = ({ navigation }) => {
   const [noResultsFound, setNoResultsFound] = useState(false)
   const [search, setSearch] = useState('')
 
+  useEffect(() => {
+    console.log('watch users', users)
+  }, [users])
+
   const isEmpty = useMemo(() => !isLoading && !users, [isLoading, users])
   const isNotFound = useMemo(
     () => !isLoading && noResultsFound,
@@ -74,6 +80,9 @@ const NewChatScreen = ({ navigation }) => {
   // handle search
   const handleChangeSearch = value => setSearch(value)
 
+  const { setTempUsers } = useActions()
+  const selfUserData = useSelector(state => state.auth.userData)
+
   const handleSearchUser = async () => {
     // empty search
     if (!search) {
@@ -85,12 +94,19 @@ const NewChatScreen = ({ navigation }) => {
     // fetch users
     setIsLoading(true)
     const usersResult = await fetchUsers(search)
+    // 刪除自己
+    delete usersResult[selfUserData.userId]
+    setUsers(usersResult)
 
     // toggle not found
     const hasUsers = !!Object.keys(usersResult).length
-    hasUsers ? setNoResultsFound(false) : setNoResultsFound(true)
+    if (hasUsers) {
+      setNoResultsFound(false)
+      setTempUsers(usersResult)
+    } else {
+      setNoResultsFound(true)
+    }
 
-    setUsers(hasUsers ? usersResult : {})
     setIsLoading(false)
   }
 
