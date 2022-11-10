@@ -14,7 +14,9 @@ const ChatScreen = ({ route, navigation }) => {
   const selfUserData = useSelector(state => state.auth.userData)
 
   const chatData = route?.params?.newChatData
-  useEffect(() => setChatUsers(chatData.users), [chatUsers])
+  useEffect(() => {
+    chatData && setChatUsers(chatData.users)
+  }, [chatUsers])
 
   const getChatTitle = useMemo(() => {
     const otherUserId = chatUsers.find(uid => uid !== selfUserData.userId)
@@ -86,7 +88,6 @@ const ContentBgCover = styled.ImageBackground.attrs({
 // IOS keyboard 顯示時, 將內容向上推效果
 const KeyboardAvoidingViewStyle = styled.KeyboardAvoidingView.attrs({
   behavior: Platform.OS === 'ios' ? 'padding' : undefined,
-  keyboardVerticalOffset: 100,
 })`
   flex: 1;
 `
