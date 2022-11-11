@@ -5,10 +5,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
 import { colors } from '../theme/colors'
 import { useSelector } from 'react-redux'
+import PageContainer from '../components/PageContainer'
+import Bubble from '../components/Bubble'
+import { createChat } from '../services/chat/createChat'
 
 const ChatScreen = ({ route, navigation }) => {
   const [chatUsers, setChatUsers] = useState([])
   const [message, setMessage] = useState('')
+  const [chatId, setChatId] = useState(route?.params?.chatId)
 
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
@@ -33,15 +37,31 @@ const ChatScreen = ({ route, navigation }) => {
 
   const onChangeText = text => setMessage(text)
 
-  const handleSendMessage = useCallback(() => {
+  const handleSendMessage = useCallback(async () => {
+    try {
+      // 尚未建立聊天室
+      if (!chatId) {
+        const newChatId = await createChat(selfUserData.userId, chatData)
+        setChatId(newChatId)
+      }
+    } catch (error) {
+      console.log(error)
+    }
     setMessage('')
   }, [message])
 
   return (
     <Container>
       <KeyboardAvoidingViewStyle>
-        <ContentBgCover></ContentBgCover>
+        <ContentBgCover>
+          <PageContainer style={{ backgroundColor: 'transparent' }}>
+            {!chatId && (
+              <Bubble text="This is a new chat. Say hi!" type={'system'} />
+            )}
+          </PageContainer>
+        </ContentBgCover>
 
+        {/* Input */}
         <InputArea>
           <IconButtonWrapper>
             <Feather name="plus" size={24} color={colors.blue} />

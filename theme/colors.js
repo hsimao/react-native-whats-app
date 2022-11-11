@@ -7,6 +7,7 @@ export const colors = {
   greyLight: '#bdc3c7',
   greyExtraLight: '#ededed',
   red: '#ee5253',
+  beige: '#fef5c3',
 
   text: {
     primary: '#1c1e2',
