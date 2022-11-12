@@ -18,6 +18,9 @@ const ChatScreen = ({ route, navigation }) => {
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
   const chatsData = useSelector(state => state.chat.chatsData)
+  const messageMap = useSelector(state => state.message.messageMap)
+
+  const chatMessageList = useMemo(() => messageMap[chatId] || {}, [chatId])
 
   // 當前聊天室資料
   const chatData = useMemo(() => {

@@ -59,7 +59,7 @@ const ChatListScreen = ({ navigation, route }) => {
       <FlatList
         data={userChats}
         renderItem={itemData => {
-          const { users, key: chatId } = itemData.item
+          const { users, key: chatId, latestMessage } = itemData.item
           const displayUserId = users.find(uid => uid !== selfUserData.userId)
           const displayUser = tempUsers[displayUserId]
           if (!displayUser) return
@@ -67,7 +67,7 @@ const ChatListScreen = ({ navigation, route }) => {
           return (
             <UserItem
               title={displayUser.firstName}
-              subtitle="This will be a message..."
+              subtitle={latestMessage || 'New chat'}
               avatar={displayUser.avatar}
               onPress={() => handleToChatScreen(chatId)}
             />

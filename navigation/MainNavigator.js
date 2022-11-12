@@ -6,6 +6,7 @@ import styled from 'styled-components/native'
 import { onUserChats } from '../services/chat/onUserChats'
 import { onChat } from '../services/chat/onChat'
 import { fetchUser } from '../services/users/fetchUser'
+import { onMessage } from '../services/message/onMessage'
 
 // store
 import { useSelector } from 'react-redux'
@@ -116,7 +117,7 @@ const MainNavigator = props => {
   const selfUserData = useSelector(state => state.auth.userData)
   const tempUsers = useSelector(state => state.user.tempUsers)
 
-  const { setChatsData, setTempUsers } = useActions()
+  const { setChatsData, setTempUsers, setChatMessage } = useActions()
 
   // Init 訂閱
   useEffect(() => {
@@ -160,6 +161,13 @@ const MainNavigator = props => {
           }
         })
         unsubscribeList.push(unsubscribeChat)
+
+        // 監聽聊天室訊息
+        const unsubscribeMessage = onMessage(chatId, messageSnapshot => {
+          const messageData = messageSnapshot.val()
+          setChatMessage({ chatId, messageData })
+        })
+        unsubscribeList.push(unsubscribeMessage)
       })
     })
     unsubscribeList.push(unsubscribeUserChats)
