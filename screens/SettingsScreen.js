@@ -190,7 +190,7 @@ const SettingsScreen = () => {
           title="Logout"
           style={{ marginTop: 20 }}
           color={colors.red}
-          onPress={logout}
+          onPress={() => logout()}
         />
       </ScrollView>
     </PageContainer>

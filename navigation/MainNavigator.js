@@ -1,4 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+
+// services
+import { useSelector } from 'react-redux'
+import { onUserChats } from '../services/chat/onUserChats'
+import { onChat } from '../services/chat/onChat'
 
 // navigation
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -57,7 +62,7 @@ const TabNavigator = () => {
   )
 }
 
-const MainNavigator = props => {
+const StackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Group>
@@ -89,6 +94,40 @@ const MainNavigator = props => {
       </Stack.Group>
     </Stack.Navigator>
   )
+}
+
+const MainNavigator = props => {
+  const selfUserData = useSelector(state => state.auth.userData)
+  const tempUsers = useSelector(state => state.user.tempUsers)
+
+  useEffect(() => {
+    // 需解除訂閱列表
+    const unsubscribeList = []
+    let chatsFoundCount = 0
+
+    // 監聽 user 聊天列表
+    console.log('Subscribing listeners')
+    const unsubscribeUserChats = onUserChats(selfUserData.userId, snapshot => {
+      const chatIds = Object.values(snapshot.val() || {})
+
+      // 監聽聊天室
+      chatIds.forEach(chatId => {
+        const unsubscribeChat = onChat(chatId, chatSnapshot => {
+          chatsFoundCount++
+          console.log(chatSnapshot.val())
+        })
+        unsubscribeList.push(unsubscribeChat)
+      })
+    })
+    unsubscribeList.push(unsubscribeUserChats)
+
+    // 解除訂閱
+    return () => {
+      unsubscribeList.forEach(unsubscribe => unsubscribe())
+      console.log('Unsubscribing listeners')
+    }
+  }, [])
+  return <StackNavigator />
 }
 
 export default MainNavigator
