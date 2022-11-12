@@ -139,7 +139,7 @@ const MainNavigator = props => {
           chatsFoundCount++
 
           // update chatsData
-          const data = chatSnapshot.val()
+          let data = chatSnapshot.val()
           if (data) {
             data.key = chatSnapshot.key
             chatsData[data.key] = data

@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import PageContainer from '../components/PageContainer'
 import Bubble from '../components/Bubble'
 import { createChat } from '../services/chat/createChat'
+import { createMessage } from '../services/message/createMessage'
 
 const ChatScreen = ({ route, navigation }) => {
   const [chatUsers, setChatUsers] = useState([])
@@ -16,8 +17,14 @@ const ChatScreen = ({ route, navigation }) => {
 
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
+  const chatsData = useSelector(state => state.chat.chatsData)
 
-  const chatData = route?.params?.newChatData
+  // 當前聊天室資料
+  const chatData = useMemo(() => {
+    if (chatId && chatsData[chatId]) return chatsData[chatId]
+    return route?.params?.newChatData
+  }, [route.params, chatData, chatsData])
+
   useEffect(() => {
     chatData && setChatUsers(chatData.users)
   }, [chatUsers])
@@ -44,6 +51,9 @@ const ChatScreen = ({ route, navigation }) => {
         const newChatId = await createChat(selfUserData.userId, chatData)
         setChatId(newChatId)
       }
+
+      // 儲存 message 到 db
+      await createMessage(chatId, selfUserData.userId, message)
     } catch (error) {
       console.log(error)
     }
