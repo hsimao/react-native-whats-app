@@ -5,6 +5,9 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import CustomHeaderButton from '../components/CustomHeaderButtons'
 
 const ChatListScreen = ({ navigation, route }) => {
+  // 當前用戶所有聊天列表資料
+  const userChats = useSelector(state => state.chat.chatsData)
+
   const userData = useSelector(state => state.auth.userData)
   const selectedUserId = route?.params?.selectedUserId
   // 若有 selectedUserId 則跳轉到聊天頁面
@@ -22,6 +25,7 @@ const ChatListScreen = ({ navigation, route }) => {
   const handleToSetting = () => navigation.navigate('ChatScreen')
   const handleToNewChat = () => navigation.navigate('NewChat')
 
+  // Init navigation header
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => {

@@ -2,6 +2,7 @@ import { useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { authSlice } from './authSlice'
 import { userSlice } from './userSlice'
+import { chatSlice } from './chatSlice'
 
 // 封裝 dispatch, 直接調用取出各別 slice actions 方法即可, 不用在各別引入組合
 /**
@@ -12,7 +13,7 @@ import { userSlice } from './userSlice'
 export const useActions = () => {
   const dispatch = useDispatch()
   return bindActionCreators(
-    { ...authSlice.actions, ...userSlice.actions },
+    { ...authSlice.actions, ...userSlice.actions, ...chatSlice.actions },
     dispatch
   )
 }

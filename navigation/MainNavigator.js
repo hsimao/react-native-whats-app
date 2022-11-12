@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react'
+import { ActivityIndicator } from 'react-native'
+import styled from 'styled-components/native'
 
 // services
-import { useSelector } from 'react-redux'
 import { onUserChats } from '../services/chat/onUserChats'
 import { onChat } from '../services/chat/onChat'
+
+// store
+import { useSelector } from 'react-redux'
+import { useActions } from '../store/hooks'
 
 // navigation
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -18,6 +23,15 @@ import ChatSettingsScreen from '../screens/ChatSettingsScreen'
 import SettingsScreen from '../screens/SettingsScreen'
 import ChatScreen from '../screens/ChatScreen'
 import NewChatScreen from '../screens/NewChatScreen'
+
+// theme
+import { colors } from '../theme/colors'
+
+const LoadingWrapper = styled.View`
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+`
 
 // Stack
 const Stack = createNativeStackNavigator()
@@ -97,12 +111,17 @@ const StackNavigator = () => {
 }
 
 const MainNavigator = props => {
+  const [isLoading, setIsLoading] = useState(true)
   const selfUserData = useSelector(state => state.auth.userData)
-  const tempUsers = useSelector(state => state.user.tempUsers)
 
+  const { setChatsData } = useActions()
+
+  // Init 訂閱
   useEffect(() => {
     // 需解除訂閱列表
     const unsubscribeList = []
+    // 聊天室資料 map
+    const chatsData = {}
     let chatsFoundCount = 0
 
     // 監聽 user 聊天列表
@@ -114,7 +133,22 @@ const MainNavigator = props => {
       chatIds.forEach(chatId => {
         const unsubscribeChat = onChat(chatId, chatSnapshot => {
           chatsFoundCount++
-          console.log(chatSnapshot.val())
+
+          // update chatsData
+          const data = chatSnapshot.val()
+          if (data) {
+            data.key = chatSnapshot.key
+            chatsData[data.key] = data
+          }
+
+          // chatsData 儲存到 store
+          if (chatsFoundCount >= chatIds.length) {
+            setChatsData(chatsData)
+            setIsLoading(false)
+          }
+
+          // 未有列表
+          if (chatsFoundCount === 0) setIsLoading(false)
         })
         unsubscribeList.push(unsubscribeChat)
       })
@@ -127,6 +161,16 @@ const MainNavigator = props => {
       console.log('Unsubscribing listeners')
     }
   }, [])
+
+  // loading
+  if (isLoading) {
+    return (
+      <LoadingWrapper>
+        <ActivityIndicator size={'large'} color={colors.primary} />
+      </LoadingWrapper>
+    )
+  }
+
   return <StackNavigator />
 }
 
