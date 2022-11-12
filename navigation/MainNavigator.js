@@ -5,6 +5,7 @@ import styled from 'styled-components/native'
 // services
 import { onUserChats } from '../services/chat/onUserChats'
 import { onChat } from '../services/chat/onChat'
+import { fetchUser } from '../services/users/fetchUser'
 
 // store
 import { useSelector } from 'react-redux'
@@ -113,21 +114,24 @@ const StackNavigator = () => {
 const MainNavigator = props => {
   const [isLoading, setIsLoading] = useState(true)
   const selfUserData = useSelector(state => state.auth.userData)
+  const tempUsers = useSelector(state => state.user.tempUsers)
 
-  const { setChatsData } = useActions()
+  const { setChatsData, setTempUsers } = useActions()
 
   // Init 訂閱
   useEffect(() => {
     // 需解除訂閱列表
     const unsubscribeList = []
-    // 聊天室資料 map
-    const chatsData = {}
-    let chatsFoundCount = 0
 
     // 監聽 user 聊天列表
     console.log('Subscribing listeners')
     const unsubscribeUserChats = onUserChats(selfUserData.userId, snapshot => {
+      let chatsFoundCount = 0
+      const chatsData = {}
       const chatIds = Object.values(snapshot.val() || {})
+
+      // 未有列表
+      if (chatIds.length === 0) setIsLoading(false)
 
       // 監聽聊天室
       chatIds.forEach(chatId => {
@@ -139,6 +143,14 @@ const MainNavigator = props => {
           if (data) {
             data.key = chatSnapshot.key
             chatsData[data.key] = data
+
+            // 檢查聊天室用戶是否已經在緩存用戶列表內
+            data.users.forEach(async userId => {
+              if (tempUsers[userId]) return
+              // 從 db 取得用戶資料儲存到 tempUsers
+              const userData = await fetchUser(userId)
+              setTempUsers({ [userData.userId]: userData })
+            })
           }
 
           // chatsData 儲存到 store
@@ -146,9 +158,6 @@ const MainNavigator = props => {
             setChatsData(chatsData)
             setIsLoading(false)
           }
-
-          // 未有列表
-          if (chatsFoundCount === 0) setIsLoading(false)
         })
         unsubscribeList.push(unsubscribeChat)
       })

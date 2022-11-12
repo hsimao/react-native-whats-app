@@ -32,20 +32,19 @@ const Subtitle = styled.Text.attrs({
   letter-spacing: 0.3px;
 `
 
-const SearchUserItem = ({ user, onPress }) => {
-  const { fullName, about, avatar } = user
+const UserItem = ({ title, subtitle, avatar, onPress }) => {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <Container>
         <ProfileImage uri={avatar} size={40} />
 
         <TextContent>
-          <Title>{fullName}</Title>
-          <Subtitle>{about}</Subtitle>
+          <Title>{title}</Title>
+          <Subtitle>{subtitle}</Subtitle>
         </TextContent>
       </Container>
     </TouchableWithoutFeedback>
   )
 }
 
-export default SearchUserItem
+export default UserItem

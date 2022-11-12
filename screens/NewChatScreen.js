@@ -5,7 +5,7 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import { FontAwesome } from '@expo/vector-icons'
 import PageContainer from '../components/PageContainer'
 import CustomHeaderButton from '../components/CustomHeaderButtons'
-import SearchUserItem from '../components/SearchUserItem'
+import UserItem from '../components/UserItem'
 import { colors } from '../theme/colors'
 import { fetchUsers } from '../services/users/fetchUsers'
 import { useActions } from '../store/hooks'
@@ -155,12 +155,17 @@ const NewChatScreen = ({ navigation }) => {
       {showUserList && (
         <FlatList
           data={Object.keys(users)}
-          renderItem={itemData => (
-            <SearchUserItem
-              user={users[itemData.item]}
-              onPress={() => handleClickUser(itemData.item)}
-            />
-          )}
+          renderItem={itemData => {
+            const { firstName, lastName, avatar } = users[itemData.item]
+            const title = `${firstName} ${lastName}`
+            return (
+              <UserItem
+                title={title}
+                avatar={avatar}
+                onPress={() => handleClickUser(itemData.item)}
+              />
+            )
+          }}
         />
       )}
     </PageContainer>

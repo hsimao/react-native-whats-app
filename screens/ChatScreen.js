@@ -69,8 +69,8 @@ const ChatScreen = ({ route, navigation }) => {
 
           <TextInputStyle
             value={message}
-            onChangeText={onChangeText}
-            onSubmitEditing={handleSendMessage}
+            onChangeText={text => onChangeText(text)}
+            onSubmitEditing={() => handleSendMessage()}
           />
 
           {/* 當 input 尚未輸入文字, 顯示相機按鈕 */}
@@ -82,7 +82,7 @@ const ChatScreen = ({ route, navigation }) => {
 
           {/* 當 input 有輸入文字, 顯示 send 按鈕 */}
           {message !== '' && (
-            <IconButtonWrapper round onPress={handleSendMessage}>
+            <IconButtonWrapper round onPress={() => handleSendMessage()}>
               <Feather name="send" size={20} color={colors.white} />
             </IconButtonWrapper>
           )}
