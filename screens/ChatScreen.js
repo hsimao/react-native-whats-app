@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Platform } from 'react-native'
+import { Platform, FlatList } from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
@@ -19,9 +19,18 @@ const ChatScreen = ({ route, navigation }) => {
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
   const chatsData = useSelector(state => state.chat.chatsData)
-  const messageMap = useSelector(state => state.message.messageMap)
+  const messageList = useSelector(state => {
+    if (!chatId) return []
+    const messageMap = state.message.messageMap[chatId]
 
-  const chatMessageList = useMemo(() => messageMap[chatId] || {}, [chatId])
+    return Object.keys(messageMap)
+      .map(key => ({
+        ...messageMap[key],
+        isMe: messageMap[key].sendBy === selfUserData.userId,
+        id: key,
+      }))
+      .sort((a, b) => new Date(a.sendAt) - new Date(b.sendAt))
+  })
 
   // 當前聊天室資料
   const chatData = useMemo(() => {
@@ -70,6 +79,7 @@ const ChatScreen = ({ route, navigation }) => {
     <Container>
       <KeyboardAvoidingViewStyle>
         <ContentBgCover>
+          {/* content */}
           <PageContainer style={{ backgroundColor: 'transparent' }}>
             {!chatId && (
               <Bubble text="This is a new chat. Say hi!" type="system" />
@@ -77,6 +87,21 @@ const ChatScreen = ({ route, navigation }) => {
 
             {/* error */}
             {errorBannerText && <Bubble text={errorBannerText} type="error" />}
+
+            {/* message */}
+            {messageList.length && (
+              <FlatList
+                data={messageList}
+                renderItem={itemData => {
+                  const message = itemData.item
+                  const messageType = message.isMe
+                    ? 'myMessage'
+                    : 'theirMessage'
+
+                  return <Bubble text={message.text} type={messageType} />
+                }}
+              />
+            )}
           </PageContainer>
         </ContentBgCover>
 

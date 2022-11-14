@@ -1,76 +1,61 @@
 import React from 'react'
 import styled from 'styled-components/native'
+import { colors } from '../theme/colors'
 
 const Container = styled.View`
   flex-direction: row;
-  justify-content: center;
+  justify-content: ${({ position }) => (position ? position : 'center')};
 `
 
 const BaseContent = styled.View`
-  background-color: white;
   border-radius: 6px;
   padding: 5px;
   margin-bottom: 10px;
   border: solid 1px #e2dacc;
-`
-
-const SystemContent = styled.View`
-  margin-top: 10px;
-  align-items: center;
-  background-color: ${props => props.theme.colors.beige};
-  border-radius: 6px;
-  padding: 5px;
-  margin-bottom: 10px;
-  border: solid 1px #e2dacc;
-`
-
-const ErrorContent = styled.View`
-  margin-top: 10px;
-  align-items: center;
-  background-color: ${props => props.theme.colors.red};
-  border-radius: 6px;
-  padding: 5px;
-  margin-bottom: 10px;
-  border: solid 1px #e2dacc;
+  background-color: ${({ bgColor }) => (bgColor ? bgColor : 'white')}
+  margin-top: ${({ marginTop }) => (marginTop ? marginTop : '0')}px;
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '100%')};
 `
 
 const BaseText = styled.Text`
   font-family: regular;
   letter-spacing: 0.3px;
-`
-
-const SystemText = styled.Text`
-  color: #64644a;
-  font-family: regular;
-  letter-spacing: 0.3px;
-`
-
-const ErrorText = styled.Text`
-  color: white;
-  font-family: regular;
-  letter-spacing: 0.3px;
+  ${({ color }) => (color ? `color: ${color}` : '')};
 `
 
 const Bubble = ({ text, type }) => {
-  let CurrentText = BaseText
-  let CurrentContent = BaseContent
+  let position = 'center'
+  let bgColor = 'white'
+  let marginTop = 0
+  let textColor = ''
+  let maxWidth = '100%'
 
   switch (type) {
     case 'system':
-      CurrentText = SystemText
-      CurrentContent = SystemContent
+      bgColor = colors.beige
+      marginTop = 10
+      textColor = '#64644a'
       break
     case 'error':
-      CurrentContent = ErrorContent
-      CurrentText = ErrorText
+      bgColor = colors.red
+      marginTop = 10
+      textColor = 'white'
+      break
+    case 'myMessage':
+      position = 'flex-end'
+      bgColor = colors.primaryLight
+      maxWidth = '90%'
+      break
+    case 'theirMessage':
+      position = 'flex-start'
       break
   }
 
   return (
-    <Container>
-      <CurrentContent>
-        <CurrentText>{text}</CurrentText>
-      </CurrentContent>
+    <Container position={position}>
+      <BaseContent maxWidth={maxWidth} bgColor={bgColor} marginTop={marginTop}>
+        <BaseText color={textColor}>{text}</BaseText>
+      </BaseContent>
     </Container>
   )
 }
