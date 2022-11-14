@@ -24,6 +24,16 @@ const SystemContent = styled.View`
   border: solid 1px #e2dacc;
 `
 
+const ErrorContent = styled.View`
+  margin-top: 10px;
+  align-items: center;
+  background-color: ${props => props.theme.colors.red};
+  border-radius: 6px;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: solid 1px #e2dacc;
+`
+
 const BaseText = styled.Text`
   font-family: regular;
   letter-spacing: 0.3px;
@@ -31,6 +41,12 @@ const BaseText = styled.Text`
 
 const SystemText = styled.Text`
   color: #64644a;
+  font-family: regular;
+  letter-spacing: 0.3px;
+`
+
+const ErrorText = styled.Text`
+  color: white;
   font-family: regular;
   letter-spacing: 0.3px;
 `
@@ -43,7 +59,10 @@ const Bubble = ({ text, type }) => {
     case 'system':
       CurrentText = SystemText
       CurrentContent = SystemContent
-
+      break
+    case 'error':
+      CurrentContent = ErrorContent
+      CurrentText = ErrorText
       break
   }
 

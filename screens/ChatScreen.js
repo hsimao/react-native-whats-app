@@ -14,6 +14,7 @@ const ChatScreen = ({ route, navigation }) => {
   const [chatUsers, setChatUsers] = useState([])
   const [message, setMessage] = useState('')
   const [chatId, setChatId] = useState(route?.params?.chatId)
+  const [errorBannerText, setErrorBannerText] = useState('')
 
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
@@ -59,6 +60,8 @@ const ChatScreen = ({ route, navigation }) => {
       await createMessage(chatId, selfUserData.userId, message)
     } catch (error) {
       console.log(error)
+      setErrorBannerText('Message failed to send')
+      setTimeout(() => setErrorBannerText(''), 5000)
     }
     setMessage('')
   }, [message])
@@ -69,8 +72,11 @@ const ChatScreen = ({ route, navigation }) => {
         <ContentBgCover>
           <PageContainer style={{ backgroundColor: 'transparent' }}>
             {!chatId && (
-              <Bubble text="This is a new chat. Say hi!" type={'system'} />
+              <Bubble text="This is a new chat. Say hi!" type="system" />
             )}
+
+            {/* error */}
+            {errorBannerText && <Bubble text={errorBannerText} type="error" />}
           </PageContainer>
         </ContentBgCover>
 
