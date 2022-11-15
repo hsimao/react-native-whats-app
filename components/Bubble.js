@@ -1,4 +1,5 @@
 import React from 'react'
+import { View, TouchableWithoutFeedback } from 'react-native'
 import styled from 'styled-components/native'
 import { colors } from '../theme/colors'
 
@@ -20,14 +21,18 @@ const BaseContent = styled.View`
 const BaseText = styled.Text`
   font-family: regular;
   letter-spacing: 0.3px;
+  text-align: ${({ position }) => position};
   ${({ color }) => (color ? `color: ${color}` : '')};
 `
 
 const Bubble = ({ text, type }) => {
+  let TouchWrapper = View
+
   let position = 'center'
   let bgColor = 'white'
   let marginTop = 0
   let textColor = ''
+  let textPosition = 'center'
   let maxWidth = '100%'
 
   switch (type) {
@@ -45,19 +50,35 @@ const Bubble = ({ text, type }) => {
       position = 'flex-end'
       bgColor = colors.primaryLight
       maxWidth = '90%'
+      textPosition = 'right'
+      TouchWrapper = TouchableWithoutFeedback
       break
     case 'theirMessage':
       position = 'flex-start'
       maxWidth = '90%'
-
+      textPosition = 'left'
+      TouchWrapper = TouchableWithoutFeedback
       break
   }
 
   return (
     <Container position={position}>
-      <BaseContent maxWidth={maxWidth} bgColor={bgColor} marginTop={marginTop}>
-        <BaseText color={textColor}>{text}</BaseText>
-      </BaseContent>
+      <TouchWrapper
+        style={{ width: '100%' }}
+        onLongPress={() => {
+          console.log('long predss')
+        }}
+      >
+        <BaseContent
+          maxWidth={maxWidth}
+          bgColor={bgColor}
+          marginTop={marginTop}
+        >
+          <BaseText color={textColor} position={textPosition}>
+            {text}
+          </BaseText>
+        </BaseContent>
+      </TouchWrapper>
     </Container>
   )
 }

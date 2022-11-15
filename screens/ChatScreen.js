@@ -21,7 +21,9 @@ const ChatScreen = ({ route, navigation }) => {
   const chatsData = useSelector(state => state.chat.chatsData)
   const messageList = useSelector(state => {
     if (!chatId) return []
+
     const messageMap = state.message.messageMap[chatId]
+    if (!messageMap) return []
 
     return Object.keys(messageMap)
       .map(key => ({
@@ -89,7 +91,7 @@ const ChatScreen = ({ route, navigation }) => {
             {errorBannerText && <Bubble text={errorBannerText} type="error" />}
 
             {/* message */}
-            {messageList.length && (
+            {!!messageList.length && (
               <FlatList
                 data={messageList}
                 renderItem={itemData => {
