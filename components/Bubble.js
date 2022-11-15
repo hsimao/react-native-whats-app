@@ -48,6 +48,8 @@ const Bubble = ({ text, type }) => {
       break
     case 'theirMessage':
       position = 'flex-start'
+      maxWidth = '90%'
+
       break
   }
 
