@@ -7,6 +7,7 @@ import { validateInput } from '../utils/actions/formActions'
 import { signUp } from '../services/auth/signUp'
 import { reducer } from '../utils/reducers/formReducer'
 import { colors } from '../theme/colors'
+import { useActions } from '../store/hooks'
 
 const initialState = {
   inputValues: {
@@ -25,6 +26,7 @@ const initialState = {
 }
 
 const SignUpForm = () => {
+  const { authenticate, logout, setLogoutTimer } = useActions()
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [formState, dispatchFormState] = useReducer(reducer, initialState)
@@ -49,23 +51,34 @@ const SignUpForm = () => {
     [formState.inputValidities]
   )
 
-  const handleSignUp = async () => {
+  const handleSignUp = useCallback(async () => {
     try {
       setError('')
       setIsLoading(true)
 
-      await signUp({
+      const userData = await signUp({
         firstName: formState.inputValues.firstName,
         lastName: formState.inputValues.lastName,
         email: formState.inputValues.email,
         password: formState.inputValues.password,
       })
+
+      if (!userData) return
+
+      // save to store
+      authenticate(userData)
+
+      // token 到期登出
+      setLogoutTimer(
+        setTimeout(() => logout(), userData.millisecondsUntilExpiry)
+      )
     } catch (error) {
+      console.log('error', error)
       setError(error.message)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [formState])
 
   // show error alert
   useEffect(() => {

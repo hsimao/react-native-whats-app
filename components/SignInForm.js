@@ -1,24 +1,33 @@
-import { useReducer, useCallback } from 'react'
+import { useReducer, useEffect, useCallback, useState } from 'react'
+import { Alert, ActivityIndicator } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
 import { validateInput } from '../utils/actions/formActions'
-import { signUp } from '../services/auth/signUp'
+import { signIn } from '../services/auth/signIn'
 import { reducer } from '../utils/reducers/formReducer'
+import { useActions } from '../store/hooks'
+import { colors } from '../theme/colors'
+
+const isTestMode = true
 
 const initialState = {
   inputValues: {
-    email: '',
-    password: '',
+    email: isTestMode ? 'mars@gmail.com' : '',
+    password: isTestMode ? 'a123456' : '',
   },
   inputValidities: {
-    email: false,
-    password: false,
+    email: isTestMode,
+    password: isTestMode,
   },
-  formIsValid: false,
+  formIsValid: isTestMode,
 }
 
 const SignInForm = () => {
+  const { authenticate, setLogoutTimer, logout } = useActions()
+
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const [formState, dispatchFormState] = useReducer(reducer, initialState)
 
   const handleInputChange = useCallback(
@@ -41,12 +50,35 @@ const SignInForm = () => {
     [formState.inputValidities]
   )
 
-  const handleSignIn = () => {
-    signUp({
-      email: formState.inputValues.email,
-      password: formState.inputValues.password,
-    })
-  }
+  const handleSignIn = useCallback(async () => {
+    try {
+      setError('')
+      setIsLoading(true)
+
+      const userData = await signIn({
+        email: formState.inputValues.email,
+        password: formState.inputValues.password,
+      })
+
+      // save to store
+      authenticate(userData)
+
+      // token 到期登出
+      setLogoutTimer(
+        setTimeout(() => logout(), userData.millisecondsUntilExpiry)
+      )
+    } catch (error) {
+      console.log('error', error)
+      setError(error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [formState])
+
+  // show error alert
+  useEffect(() => {
+    error && Alert.alert('An error occurred', error, [{ text: 'Okay' }])
+  }, [error])
 
   return (
     <>
@@ -55,6 +87,7 @@ const SignInForm = () => {
         label="Email"
         icon="mail"
         iconPack={Feather}
+        initialValue={formState.inputValues.email}
         onInputChange={handleInputChange}
         autoCapitalize="none"
         keyboardType="email-address"
@@ -66,18 +99,27 @@ const SignInForm = () => {
         label="Password"
         icon="lock"
         iconPack={Feather}
+        initialValue={formState.inputValues.password}
         onInputChange={handleInputChange}
         autoCapitalize="none"
         secureTextEntry
         errorText={getErrorById('password')}
       />
 
-      <SubmitButton
-        title="Sign In"
-        style={{ marginTop: 20 }}
-        onPress={handleSignIn}
-        disabled={!formState.formIsValid}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size={'small'}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <SubmitButton
+          title="Sign In"
+          style={{ marginTop: 20 }}
+          onPress={handleSignIn}
+          disabled={!formState.formIsValid}
+        />
+      )}
     </>
   )
 }

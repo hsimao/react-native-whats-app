@@ -8,12 +8,16 @@ import { useEffect, useState } from 'react'
 import * as React from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Font from 'expo-font'
-import { store } from './store'
-
+import { Provider } from 'react-redux'
+import { store } from './store/store'
 import AppNavigator from './navigation/AppNavigator'
 
 // FIX: 修復 Reload SplashScreen 報錯 https://github.com/expo/expo/issues/14824
 LogBox.ignoreLogs(['SplashScreen.show', 'AsyncStorage has been extracted'])
+
+// NOTE: 測試用, 清除 storage
+// import AsyncStorage from '@react-native-async-storage/async-storage'
+// AsyncStorage.clear()
 
 // 維持啟動畫面
 SplashScreen.preventAutoHideAsync()
