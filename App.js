@@ -9,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import * as Font from 'expo-font'
 import { Provider } from 'react-redux'
 import { store } from './store/store'
+import { MenuProvider } from 'react-native-popup-menu'
 import AppNavigator from './navigation/AppNavigator'
 
 // FIX: 修復 Reload SplashScreen 報錯 https://github.com/expo/expo/issues/14824
@@ -62,7 +63,9 @@ export default function App() {
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <SafeAreaProvider style={styles.container} onLayout={hideSplashScreen}>
-          <AppNavigator />
+          <MenuProvider>
+            <AppNavigator />
+          </MenuProvider>
         </SafeAreaProvider>
       </ThemeProvider>
     </Provider>
