@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Platform, FlatList } from 'react-native'
+import { Platform, FlatList, Keyboard } from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
@@ -69,6 +69,7 @@ const ChatScreen = ({ route, navigation }) => {
 
       // 儲存 message 到 db
       await createMessage(chatId, selfUserData.userId, message)
+      Keyboard.dismiss()
     } catch (error) {
       console.log(error)
       setErrorBannerText('Message failed to send')
@@ -154,6 +155,7 @@ const ContentBgCover = styled.ImageBackground.attrs({
 // IOS keyboard 顯示時, 將內容向上推效果
 const KeyboardAvoidingViewStyle = styled.KeyboardAvoidingView.attrs({
   behavior: Platform.OS === 'ios' ? 'padding' : undefined,
+  keyboardVerticalOffset: 100,
 })`
   flex: 1;
 `

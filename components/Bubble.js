@@ -1,7 +1,15 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { View, TouchableWithoutFeedback } from 'react-native'
 import styled from 'styled-components/native'
 import { colors } from '../theme/colors'
+import {
+  Menu,
+  MenuTrigger,
+  MenuOptions,
+  MenuOption,
+} from 'react-native-popup-menu'
+import uuid from 'react-native-uuid'
+import * as Clipboard from 'expo-clipboard'
 
 const Container = styled.View`
   flex-direction: row;
@@ -26,6 +34,9 @@ const BaseText = styled.Text`
 `
 
 const Bubble = ({ text, type }) => {
+  const menuRef = useRef(null)
+  const menuId = useRef(uuid.v4())
+
   let TouchWrapper = View
 
   let position = 'center'
@@ -61,13 +72,17 @@ const Bubble = ({ text, type }) => {
       break
   }
 
+  const handleOpenMenu = () => {
+    menuRef.current.props.ctx.menuActions.openMenu(menuId.current)
+  }
+
+  const copyToClipboard = async text => await Clipboard.setStringAsync(text)
+
   return (
     <Container position={position}>
       <TouchWrapper
         style={{ width: '100%' }}
-        onLongPress={() => {
-          console.log('long predss')
-        }}
+        onLongPress={() => handleOpenMenu()}
       >
         <BaseContent
           maxWidth={maxWidth}
@@ -77,6 +92,18 @@ const Bubble = ({ text, type }) => {
           <BaseText color={textColor} position={textPosition}>
             {text}
           </BaseText>
+          <Menu name={menuId.current} ref={menuRef}>
+            <MenuTrigger />
+            <MenuOptions>
+              {/* 複製到剪貼簿 */}
+              <MenuOption
+                text="Copy to clipboard"
+                onSelect={() => copyToClipboard(text)}
+              />
+              <MenuOption text="Option 2" />
+              <MenuOption text="Option 3" />
+            </MenuOptions>
+          </Menu>
         </BaseContent>
       </TouchWrapper>
     </Container>

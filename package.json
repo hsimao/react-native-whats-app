@@ -18,6 +18,7 @@
     "@react-navigation/stack": "^6.3.2",
     "@reduxjs/toolkit": "^1.8.6",
     "expo": "~46.0.16",
+    "expo-clipboard": "~3.1.0",
     "expo-image-picker": "^13.3.1",
     "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.0",
