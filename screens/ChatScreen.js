@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Platform, FlatList, Keyboard } from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -11,6 +11,7 @@ import { createChat } from '../services/chat/createChat'
 import { createMessage } from '../services/message/createMessage'
 
 const ChatScreen = ({ route, navigation }) => {
+  const flatListRef = useRef(null)
   const [chatUsers, setChatUsers] = useState([])
   const [message, setMessage] = useState('')
   const [chatId, setChatId] = useState(route?.params?.chatId)
@@ -78,6 +79,9 @@ const ChatScreen = ({ route, navigation }) => {
     setMessage('')
   }, [message])
 
+  const handleScrollToEnd = () =>
+    flatListRef.current.scrollToEnd({ animated: false })
+
   return (
     <Container>
       <KeyboardAvoidingViewStyle>
@@ -94,7 +98,9 @@ const ChatScreen = ({ route, navigation }) => {
             {/* message */}
             {!!messageList.length && (
               <FlatList
+                ref={flatListRef}
                 data={messageList}
+                onContentSizeChange={() => handleScrollToEnd()}
                 renderItem={itemData => {
                   const message = itemData.item
                   const messageType = message.isMe
