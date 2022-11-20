@@ -87,7 +87,7 @@ const ChatScreen = ({ route, navigation }) => {
       <KeyboardAvoidingViewStyle>
         <ContentBgCover>
           {/* content */}
-          <PageContainer style={{ backgroundColor: 'transparent' }}>
+          <Content style={{ backgroundColor: 'transparent' }}>
             {!chatId && (
               <Bubble text="This is a new chat. Say hi!" type="system" />
             )}
@@ -111,7 +111,7 @@ const ChatScreen = ({ route, navigation }) => {
                 }}
               />
             )}
-          </PageContainer>
+          </Content>
         </ContentBgCover>
 
         {/* Input */}
@@ -163,6 +163,10 @@ const KeyboardAvoidingViewStyle = styled.KeyboardAvoidingView.attrs({
   behavior: Platform.OS === 'ios' ? 'padding' : undefined,
   keyboardVerticalOffset: 100,
 })`
+  flex: 1;
+`
+
+const Content = styled.View`
   flex: 1;
 `
 

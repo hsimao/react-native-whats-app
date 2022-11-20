@@ -2,18 +2,16 @@ import React, { useRef } from 'react'
 import { View, TouchableWithoutFeedback } from 'react-native'
 import styled from 'styled-components/native'
 import { colors } from '../theme/colors'
-import {
-  Menu,
-  MenuTrigger,
-  MenuOptions,
-  MenuOption,
-} from 'react-native-popup-menu'
+import { Menu, MenuTrigger, MenuOptions } from 'react-native-popup-menu'
 import uuid from 'react-native-uuid'
 import * as Clipboard from 'expo-clipboard'
+import BubbleMenuItem from './BubbleMenuItem'
+import { FontAwesome } from '@expo/vector-icons'
 
 const Container = styled.View`
   flex-direction: row;
   justify-content: ${({ position }) => (position ? position : 'center')};
+  margin: 0 20px;
 `
 
 const BaseContent = styled.View`
@@ -76,7 +74,10 @@ const Bubble = ({ text, type }) => {
     menuRef.current.props.ctx.menuActions.openMenu(menuId.current)
   }
 
-  const copyToClipboard = async text => await Clipboard.setStringAsync(text)
+  const copyToClipboard = async text => {
+    console.log('copyToClipboard text', text)
+    await Clipboard.setStringAsync(text)
+  }
 
   return (
     <Container position={position}>
@@ -94,14 +95,27 @@ const Bubble = ({ text, type }) => {
           </BaseText>
           <Menu name={menuId.current} ref={menuRef}>
             <MenuTrigger />
-            <MenuOptions>
-              {/* 複製到剪貼簿 */}
-              <MenuOption
+            <MenuOptions
+              customStyles={{
+                optionsWrapper: {
+                  padding: 5,
+                },
+              }}
+            >
+              {/* 複製 */}
+              <BubbleMenuItem
                 text="Copy to clipboard"
+                icon="copy"
                 onSelect={() => copyToClipboard(text)}
               />
-              <MenuOption text="Option 2" />
-              <MenuOption text="Option 3" />
+
+              {/* Star */}
+              <BubbleMenuItem
+                text="Star message"
+                icon="star-o"
+                iconPack={FontAwesome}
+                onSelect={() => copyToClipboard(text)}
+              />
             </MenuOptions>
           </Menu>
         </BaseContent>
