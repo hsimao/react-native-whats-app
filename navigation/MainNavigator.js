@@ -7,6 +7,7 @@ import { onUserChats } from '../services/chat/onUserChats'
 import { onChat } from '../services/chat/onChat'
 import { fetchUser } from '../services/users/fetchUser'
 import { onMessage } from '../services/message/onMessage'
+import { onStarredMessages } from '../services/message/onStarredMessages'
 
 // store
 import { useSelector } from 'react-redux'
@@ -117,7 +118,8 @@ const MainNavigator = props => {
   const selfUserData = useSelector(state => state.auth.userData)
   const tempUsers = useSelector(state => state.user.tempUsers)
 
-  const { setChatsData, setTempUsers, setChatMessage } = useActions()
+  const { setChatsData, setTempUsers, setChatMessage, setStarredMessage } =
+    useActions()
 
   // Init 訂閱
   useEffect(() => {
@@ -171,6 +173,16 @@ const MainNavigator = props => {
       })
     })
     unsubscribeList.push(unsubscribeUserChats)
+
+    // 監聽 star message
+    const unsubscribeStarredMessage = onStarredMessages(
+      selfUserData.userId,
+      snapshot => {
+        const starredMessages = snapshot.val() || {}
+        setStarredMessage(starredMessages)
+      }
+    )
+    unsubscribeList.push(unsubscribeStarredMessage)
 
     // 解除訂閱
     return () => {

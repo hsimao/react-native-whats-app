@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { View, TouchableWithoutFeedback } from 'react-native'
 import styled from 'styled-components/native'
 import { colors } from '../theme/colors'
@@ -7,6 +7,8 @@ import uuid from 'react-native-uuid'
 import * as Clipboard from 'expo-clipboard'
 import BubbleMenuItem from './BubbleMenuItem'
 import { FontAwesome } from '@expo/vector-icons'
+import { starMessage } from '../services/message/starMessage'
+import { useSelector } from 'react-redux'
 
 const Container = styled.View`
   flex-direction: row;
@@ -31,9 +33,24 @@ const BaseText = styled.Text`
   ${({ color }) => (color ? `color: ${color}` : '')};
 `
 
-const Bubble = ({ text, type }) => {
+const TimeContent = styled.View`
+  flex-direction: row;
+  justify-content: flex-end;
+`
+
+const Bubble = ({ text, type, messageId, userId, chatId }) => {
   const menuRef = useRef(null)
   const menuId = useRef(uuid.v4())
+
+  // 當前對話已經 starred 的訊息
+  const currentChatStarredMessages = useSelector(
+    state => state.message.starredMessages[chatId] ?? {}
+  )
+
+  const isStarred = useMemo(() => {
+    const isUserMessage = type === 'myMessage' || type === 'theirMessage'
+    return isUserMessage && currentChatStarredMessages[messageId] !== undefined
+  }, [type, currentChatStarredMessages, messageId])
 
   let TouchWrapper = View
 
@@ -75,7 +92,6 @@ const Bubble = ({ text, type }) => {
   }
 
   const copyToClipboard = async text => {
-    console.log('copyToClipboard text', text)
     await Clipboard.setStringAsync(text)
   }
 
@@ -93,6 +109,15 @@ const Bubble = ({ text, type }) => {
           <BaseText color={textColor} position={textPosition}>
             {text}
           </BaseText>
+
+          {/* star icon */}
+          <TimeContent>
+            {isStarred && (
+              <FontAwesome name="star" size={14} color={colors.orange} />
+            )}
+          </TimeContent>
+
+          {/* menu */}
           <Menu name={menuId.current} ref={menuRef}>
             <MenuTrigger />
             <MenuOptions
@@ -111,10 +136,11 @@ const Bubble = ({ text, type }) => {
 
               {/* Star */}
               <BubbleMenuItem
-                text="Star message"
-                icon="star-o"
+                text={`${isStarred ? 'Unstar' : 'Star'} message`}
+                icon={isStarred ? 'star' : 'star-o'}
+                iconColor={isStarred ? colors.orange : ''}
                 iconPack={FontAwesome}
-                onSelect={() => copyToClipboard(text)}
+                onSelect={() => starMessage(messageId, chatId, userId)}
               />
             </MenuOptions>
           </Menu>

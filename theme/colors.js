@@ -8,6 +8,7 @@ export const colors = {
   greyLight: '#bdc3c7',
   greyExtraLight: '#ededed',
   red: '#ee5253',
+  orange: '#F49D1A',
   beige: '#fef5c3',
 
   text: {

@@ -15,13 +15,13 @@ const Text = styled.Text`
   font-size: 16px;
 `
 
-const BubbleMenuItem = ({ text, onSelect, icon, iconPack }) => {
+const BubbleMenuItem = ({ text, onSelect, icon, iconPack, iconColor = '' }) => {
   const Icon = iconPack ?? Feather
 
   return (
     <Container onSelect={onSelect}>
       <Text>{text}</Text>
-      <Icon name={icon} size={18} />
+      <Icon name={icon} size={18} color={iconColor} />
     </Container>
   )
 }

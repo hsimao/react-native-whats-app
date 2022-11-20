@@ -5,7 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
 import { colors } from '../theme/colors'
 import { useSelector } from 'react-redux'
-import PageContainer from '../components/PageContainer'
 import Bubble from '../components/Bubble'
 import { createChat } from '../services/chat/createChat'
 import { createMessage } from '../services/message/createMessage'
@@ -14,6 +13,7 @@ const ChatScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null)
   const [chatUsers, setChatUsers] = useState([])
   const [message, setMessage] = useState('')
+  const [isMessageChange, setIsMessageChange] = useState(false)
   const [chatId, setChatId] = useState(route?.params?.chatId)
   const [errorBannerText, setErrorBannerText] = useState('')
 
@@ -34,6 +34,14 @@ const ChatScreen = ({ route, navigation }) => {
       }))
       .sort((a, b) => new Date(a.sendAt) - new Date(b.sendAt))
   })
+
+  const messageLength = useMemo(() => messageList.length || 0, [messageList])
+  // 監聽 messageLength, 更新 isMessageChange 狀態
+  useEffect(() => {
+    setIsMessageChange(true)
+    const timer = setTimeout(() => setIsMessageChange(false), 500)
+    return () => clearTimeout(timer)
+  }, [messageLength])
 
   // 當前聊天室資料
   const chatData = useMemo(() => {
@@ -80,7 +88,7 @@ const ChatScreen = ({ route, navigation }) => {
   }, [message])
 
   const handleScrollToEnd = () =>
-    flatListRef.current.scrollToEnd({ animated: false })
+    isMessageChange && flatListRef.current.scrollToEnd({ animated: false })
 
   return (
     <Container>
@@ -100,14 +108,22 @@ const ChatScreen = ({ route, navigation }) => {
               <FlatList
                 ref={flatListRef}
                 data={messageList}
-                onContentSizeChange={() => handleScrollToEnd()}
+                onContentSizeChange={data => handleScrollToEnd(data)}
                 renderItem={itemData => {
                   const message = itemData.item
                   const messageType = message.isMe
                     ? 'myMessage'
                     : 'theirMessage'
 
-                  return <Bubble text={message.text} type={messageType} />
+                  return (
+                    <Bubble
+                      text={message.text}
+                      type={messageType}
+                      messageId={message.id}
+                      userId={selfUserData.userId}
+                      chatId={chatId}
+                    />
+                  )
                 }}
               />
             )}
