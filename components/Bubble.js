@@ -6,7 +6,7 @@ import { Menu, MenuTrigger, MenuOptions } from 'react-native-popup-menu'
 import uuid from 'react-native-uuid'
 import * as Clipboard from 'expo-clipboard'
 import BubbleMenuItem from './BubbleMenuItem'
-import { FontAwesome } from '@expo/vector-icons'
+import { FontAwesome, Octicons } from '@expo/vector-icons'
 import { starMessage } from '../services/message/starMessage'
 import { useSelector } from 'react-redux'
 import human from 'human-time'
@@ -55,7 +55,7 @@ const TimeText = styled.Text`
   color: ${({ theme }) => theme.colors.grey};
 `
 
-const Bubble = ({ text, date, type, messageId, userId, chatId }) => {
+const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
   const menuRef = useRef(null)
   const menuId = useRef(uuid.v4())
 
@@ -162,6 +162,14 @@ const Bubble = ({ text, date, type, messageId, userId, chatId }) => {
                 iconColor={isStarred ? colors.orange : ''}
                 iconPack={FontAwesome}
                 onSelect={() => starMessage(messageId, chatId, userId)}
+              />
+
+              {/* 回覆 */}
+              <BubbleMenuItem
+                text={`${isStarred ? 'Unstar' : 'Star'} message`}
+                icon="reply"
+                iconPack={Octicons}
+                onSelect={() => setReply()}
               />
             </MenuOptions>
           </Menu>

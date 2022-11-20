@@ -3,12 +3,13 @@ import { db } from '../firebase'
 import { updateChat } from '../chat/updateChat'
 
 // 發送訊息
-export const createMessage = async (chatId, senderId, messageText) => {
+export const createMessage = async (chatId, senderId, messageText, replyTo) => {
   const messageData = {
     sendBy: senderId,
     sendAt: new Date().toISOString(),
     text: messageText,
   }
+  if (replyTo) messageData.replyTo = replyTo
 
   const dbRef = ref(db)
   const messageRef = child(dbRef, `messages/${chatId}`)

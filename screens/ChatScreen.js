@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { Platform, FlatList, Keyboard } from 'react-native'
+import { Platform, FlatList, Keyboard, Text } from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
 import { colors } from '../theme/colors'
 import { useSelector } from 'react-redux'
 import Bubble from '../components/Bubble'
+import ReplyTo from '../components/ReplyTo'
 import { createChat } from '../services/chat/createChat'
 import { createMessage } from '../services/message/createMessage'
 
@@ -16,6 +17,7 @@ const ChatScreen = ({ route, navigation }) => {
   const [isMessageChange, setIsMessageChange] = useState(false)
   const [chatId, setChatId] = useState(route?.params?.chatId)
   const [errorBannerText, setErrorBannerText] = useState('')
+  const [replyingTo, setReplyingTo] = useState()
 
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
@@ -77,7 +79,9 @@ const ChatScreen = ({ route, navigation }) => {
       }
 
       // 儲存 message 到 db
-      await createMessage(chatId, selfUserData.userId, message)
+      await createMessage(chatId, selfUserData.userId, message, replyingTo?.id)
+
+      setReplyingTo(null)
       Keyboard.dismiss()
     } catch (error) {
       console.log(error)
@@ -123,12 +127,22 @@ const ChatScreen = ({ route, navigation }) => {
                       messageId={message.id}
                       userId={selfUserData.userId}
                       chatId={chatId}
+                      setReply={() => setReplyingTo(message)}
                     />
                   )
                 }}
               />
             )}
           </Content>
+
+          {/* 回覆 */}
+          {replyingTo && (
+            <ReplyTo
+              text={replyingTo.text}
+              user={tempUsers[replyingTo.sendBy]}
+              onCancel={() => setReplyingTo(null)}
+            />
+          )}
         </ContentBgCover>
 
         {/* Input */}
