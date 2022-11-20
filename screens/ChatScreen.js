@@ -119,6 +119,7 @@ const ChatScreen = ({ route, navigation }) => {
                     <Bubble
                       text={message.text}
                       type={messageType}
+                      date={message.sendAt}
                       messageId={message.id}
                       userId={selfUserData.userId}
                       chatId={chatId}

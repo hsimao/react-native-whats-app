@@ -9,6 +9,7 @@ import BubbleMenuItem from './BubbleMenuItem'
 import { FontAwesome } from '@expo/vector-icons'
 import { starMessage } from '../services/message/starMessage'
 import { useSelector } from 'react-redux'
+import human from 'human-time'
 
 const Container = styled.View`
   flex-direction: row;
@@ -33,12 +34,28 @@ const BaseText = styled.Text`
   ${({ color }) => (color ? `color: ${color}` : '')};
 `
 
-const TimeContent = styled.View`
+const SubContent = styled.View`
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
 `
 
-const Bubble = ({ text, type, messageId, userId, chatId }) => {
+const StarIcon = styled(FontAwesome).attrs({
+  name: 'star',
+  size: 14,
+  color: colors.orange,
+})`
+  margin-right: 5px;
+`
+
+const TimeText = styled.Text`
+  font-family: regular;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  color: ${({ theme }) => theme.colors.grey};
+`
+
+const Bubble = ({ text, date, type, messageId, userId, chatId }) => {
   const menuRef = useRef(null)
   const menuId = useRef(uuid.v4())
 
@@ -95,6 +112,11 @@ const Bubble = ({ text, type, messageId, userId, chatId }) => {
     await Clipboard.setStringAsync(text)
   }
 
+  // ago time: 10 seconds ago, 1 minute ago,...
+  const agoTime = useMemo(() => {
+    return human((Date.now() - new Date(date).getTime()) / 1000)
+  }, [date])
+
   return (
     <Container position={position}>
       <TouchWrapper
@@ -110,12 +132,11 @@ const Bubble = ({ text, type, messageId, userId, chatId }) => {
             {text}
           </BaseText>
 
-          {/* star icon */}
-          <TimeContent>
-            {isStarred && (
-              <FontAwesome name="star" size={14} color={colors.orange} />
-            )}
-          </TimeContent>
+          {/* star、time */}
+          <SubContent>
+            {isStarred && <StarIcon />}
+            <TimeText>{agoTime}</TimeText>
+          </SubContent>
 
           {/* menu */}
           <Menu name={menuId.current} ref={menuRef}>
