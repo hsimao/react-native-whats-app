@@ -9,12 +9,13 @@ import BubbleMenuItem from './BubbleMenuItem'
 import { FontAwesome, Octicons } from '@expo/vector-icons'
 import { starMessage } from '../services/message/starMessage'
 import { useSelector } from 'react-redux'
-import human from 'human-time'
+import { formatAmPm } from '../utils/time'
 
 const Container = styled.View`
   flex-direction: row;
   justify-content: ${({ position }) => (position ? position : 'center')};
   margin: 0 20px;
+  ${props => (props.type === 'reply' ? 'margin: 0' : '')}
 `
 
 const BaseContent = styled.View`
@@ -32,6 +33,11 @@ const BaseText = styled.Text`
   letter-spacing: 0.3px;
   text-align: ${({ position }) => position};
   ${({ color }) => (color ? `color: ${color}` : '')};
+`
+
+const Name = styled.Text`
+  font-family: medium;
+  letter-spacing: 0.3px;
 `
 
 const SubContent = styled.View`
@@ -55,7 +61,17 @@ const TimeText = styled.Text`
   color: ${({ theme }) => theme.colors.grey};
 `
 
-const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
+const Bubble = ({
+  text,
+  name,
+  date,
+  type,
+  messageId,
+  userId,
+  chatId,
+  replyingTo,
+  setReply,
+}) => {
   const menuRef = useRef(null)
   const menuId = useRef(uuid.v4())
 
@@ -63,6 +79,11 @@ const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
   const currentChatStarredMessages = useSelector(
     state => state.message.starredMessages[chatId] ?? {}
   )
+
+  const tempUsers = useSelector(state => state.user.tempUsers)
+
+  // 回覆的用戶
+  const replyingToUser = replyingTo && tempUsers[replyingTo.sendBy]
 
   const isStarred = useMemo(() => {
     const isUserMessage = type === 'myMessage' || type === 'theirMessage'
@@ -102,6 +123,11 @@ const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
       textPosition = 'left'
       TouchWrapper = TouchableWithoutFeedback
       break
+    case 'reply':
+      textPosition = 'left'
+      bgColor = '#f2f2f2'
+      bgColor = colors.greyExtraLight
+      break
   }
 
   const handleOpenMenu = () => {
@@ -112,13 +138,10 @@ const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
     await Clipboard.setStringAsync(text)
   }
 
-  // ago time: 10 seconds ago, 1 minute ago,...
-  const agoTime = useMemo(() => {
-    return human((Date.now() - new Date(date).getTime()) / 1000)
-  }, [date])
+  const amOrPmTime = date && formatAmPm(date)
 
   return (
-    <Container position={position}>
+    <Container position={position} type={type}>
       <TouchWrapper
         style={{ width: '100%' }}
         onLongPress={() => handleOpenMenu()}
@@ -128,6 +151,19 @@ const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
           bgColor={bgColor}
           marginTop={marginTop}
         >
+          {/* 回覆的留言 */}
+          {replyingToUser && (
+            <Bubble
+              type="reply"
+              text={replyingTo.text}
+              style={{ margin: 0 }}
+              name={`${replyingToUser.firstName} ${replyingToUser.lastName}`}
+            />
+          )}
+
+          {/* user name */}
+          {name && <Name>{name}</Name>}
+
           <BaseText color={textColor} position={textPosition}>
             {text}
           </BaseText>
@@ -135,7 +171,7 @@ const Bubble = ({ text, date, type, messageId, userId, chatId, setReply }) => {
           {/* star、time */}
           <SubContent>
             {isStarred && <StarIcon />}
-            <TimeText>{agoTime}</TimeText>
+            <TimeText>{amOrPmTime}</TimeText>
           </SubContent>
 
           {/* menu */}

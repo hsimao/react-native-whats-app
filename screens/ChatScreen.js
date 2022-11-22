@@ -119,6 +119,10 @@ const ChatScreen = ({ route, navigation }) => {
                     ? 'myMessage'
                     : 'theirMessage'
 
+                  const replyingTo =
+                    message?.replyTo &&
+                    messageList.find(item => item.id === message.replyTo)
+
                   return (
                     <Bubble
                       text={message.text}
@@ -127,6 +131,7 @@ const ChatScreen = ({ route, navigation }) => {
                       messageId={message.id}
                       userId={selfUserData.userId}
                       chatId={chatId}
+                      replyingTo={replyingTo}
                       setReply={() => setReplyingTo(message)}
                     />
                   )
