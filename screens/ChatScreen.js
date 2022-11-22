@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { Platform, FlatList, Keyboard, Text } from 'react-native'
+import { Platform, FlatList, Keyboard, View, Image } from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
@@ -9,6 +9,8 @@ import Bubble from '../components/Bubble'
 import ReplyTo from '../components/ReplyTo'
 import { createChat } from '../services/chat/createChat'
 import { createMessage } from '../services/message/createMessage'
+import { launchImagePicker } from '../utils/imagePicker'
+import AwesomeAlert from 'react-native-awesome-alerts'
 
 const ChatScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null)
@@ -18,6 +20,7 @@ const ChatScreen = ({ route, navigation }) => {
   const [chatId, setChatId] = useState(route?.params?.chatId)
   const [errorBannerText, setErrorBannerText] = useState('')
   const [replyingTo, setReplyingTo] = useState()
+  const [tempImageUri, setTempImageUri] = useState('')
 
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
@@ -94,6 +97,17 @@ const ChatScreen = ({ route, navigation }) => {
   const handleScrollToEnd = () =>
     isMessageChange && flatListRef.current.scrollToEnd({ animated: false })
 
+  const pickImage = useCallback(async () => {
+    try {
+      const tempUri = await launchImagePicker()
+      if (!tempUri) return
+      console.log('tempUri', tempUri)
+
+      setTempImageUri(tempUri)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
   return (
     <Container>
       <KeyboardAvoidingViewStyle>
@@ -152,7 +166,7 @@ const ChatScreen = ({ route, navigation }) => {
 
         {/* Input */}
         <InputArea>
-          <IconButtonWrapper>
+          <IconButtonWrapper onPress={() => pickImage()}>
             <Feather name="plus" size={24} color={colors.blue} />
           </IconButtonWrapper>
 
@@ -175,6 +189,35 @@ const ChatScreen = ({ route, navigation }) => {
               <Feather name="send" size={20} color={colors.white} />
             </IconButtonWrapper>
           )}
+
+          <AwesomeAlert
+            show={!!tempImageUri}
+            title="Send image?"
+            closeOnTouchOutside
+            closeOnHardwareBackPress={false}
+            showCancelButton
+            showConfirmButton
+            cancelText="Cancel"
+            confirmText="Send image"
+            confirmButtonColor={colors.primary}
+            cancelButtonColor={colors.red}
+            onConfirmPressed={() => console.log('upload!')}
+            onCancelPressed={() => setTempImageUri('')}
+            onDismiss={() => setTempImageUri('')}
+            customView={
+              <View>
+                <Image
+                  source={{ uri: tempImageUri }}
+                  style={{ width: 200, height: 200 }}
+                />
+              </View>
+            }
+            titleStyle={{
+              fontFamily: 'medium',
+              letterSpacing: 0.3,
+              color: colors.text.primary,
+            }}
+          />
         </InputArea>
       </KeyboardAvoidingViewStyle>
     </Container>

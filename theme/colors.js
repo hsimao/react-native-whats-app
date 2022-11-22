@@ -12,7 +12,7 @@ export const colors = {
   beige: '#fef5c3',
 
   text: {
-    primary: '#1c1e2',
+    primary: '#1c1e21',
     error: '#ee5253',
   },
 }
