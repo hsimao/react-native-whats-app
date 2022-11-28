@@ -28,7 +28,7 @@ const ChatScreen = ({ route, navigation }) => {
   const [chatUsers, setChatUsers] = useState([])
   const [message, setMessage] = useState('')
   const [isMessageChange, setIsMessageChange] = useState(false)
-  const [chatId, setChatId] = useState(route?.params?.chatId)
+  const [chatId, setChatId] = useState(route?.params?.chatId || '')
   const [errorBannerText, setErrorBannerText] = useState('')
   const [replyingTo, setReplyingTo] = useState()
   const [tempImageUri, setTempImageUri] = useState('')
@@ -86,15 +86,21 @@ const ChatScreen = ({ route, navigation }) => {
   const onChangeText = text => setMessage(text)
 
   const handleSendMessage = useCallback(async () => {
+    let currentChatId = chatId
     try {
       // 尚未建立聊天室
-      if (!chatId) {
-        const newChatId = await createChat(selfUserData.userId, chatData)
-        setChatId(newChatId)
+      if (!currentChatId) {
+        currentChatId = await createChat(selfUserData.userId, chatData)
+        setChatId(currentChatId)
       }
 
       // 儲存 message 到 db
-      await createMessage(chatId, selfUserData.userId, message, replyingTo?.id)
+      await createMessage(
+        currentChatId,
+        selfUserData.userId,
+        message,
+        replyingTo?.id
+      )
 
       setReplyingTo(null)
       Keyboard.dismiss()
@@ -104,20 +110,14 @@ const ChatScreen = ({ route, navigation }) => {
       setTimeout(() => setErrorBannerText(''), 5000)
     }
     setMessage('')
-  }, [message])
+  }, [chatId, message])
 
   const handleSendImageMessage = useCallback(
-    async imageUrl => {
+    async (currentChatId, imageUrl) => {
       try {
-        // 尚未建立聊天室
-        if (!chatId) {
-          const newChatId = await createChat(selfUserData.userId, chatData)
-          setChatId(newChatId)
-        }
-
         // 儲存 image message 到 db
         await createImageMessage(
-          chatId,
+          currentChatId,
           selfUserData.userId,
           imageUrl,
           replyingTo?.id
@@ -128,7 +128,7 @@ const ChatScreen = ({ route, navigation }) => {
         setTimeout(() => setErrorBannerText(''), 5000)
       }
     },
-    [chatId, selfUserData, replyingTo]
+    [selfUserData, replyingTo]
   )
 
   const handleScrollToEnd = () =>
@@ -152,9 +152,17 @@ const ChatScreen = ({ route, navigation }) => {
   // upldate image
   const uploadImage = useCallback(async () => {
     setIsLoading(true)
+    let currentChatId = chatId
+
     try {
-      const url = await uploadChatImg(chatId, tempImageUri)
-      await handleSendImageMessage(url)
+      // 尚未建立聊天室
+      if (!currentChatId) {
+        currentChatId = await createChat(selfUserData.userId, chatData)
+        setChatId(currentChatId)
+      }
+
+      const url = await uploadChatImg(currentChatId, tempImageUri)
+      await handleSendImageMessage(currentChatId, url)
 
       setIsLoading(false)
       setTempImageUri('')
