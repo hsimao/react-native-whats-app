@@ -19,7 +19,7 @@ import {
   createMessage,
   createImageMessage,
 } from '../services/message/createMessage'
-import { launchImagePicker } from '../utils/imagePicker'
+import { launchImagePicker, openCamera } from '../utils/imagePicker'
 import AwesomeAlert from 'react-native-awesome-alerts'
 import { uploadChatImg } from '../services/upload'
 
@@ -134,9 +134,21 @@ const ChatScreen = ({ route, navigation }) => {
   const handleScrollToEnd = () =>
     isMessageChange && flatListRef.current.scrollToEnd({ animated: false })
 
+  // 選照片
   const pickImage = useCallback(async () => {
     try {
       const tempUri = await launchImagePicker()
+      if (!tempUri) return
+      setTempImageUri(tempUri)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
+  // 拍照
+  const takePhoto = useCallback(async () => {
+    try {
+      const tempUri = await openCamera()
       if (!tempUri) return
       setTempImageUri(tempUri)
     } catch (error) {
@@ -244,7 +256,7 @@ const ChatScreen = ({ route, navigation }) => {
 
           {/* 當 input 尚未輸入文字, 顯示相機按鈕 */}
           {message === '' && (
-            <IconButtonWrapper>
+            <IconButtonWrapper onPress={takePhoto}>
               <Feather name="camera" size={24} color={colors.blue} />
             </IconButtonWrapper>
           )}

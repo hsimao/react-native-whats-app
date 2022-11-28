@@ -36,8 +36,8 @@ const BaseText = styled.Text`
 `
 
 const Image = styled.Image`
-  width: 300px;
-  height: 300px;
+  width: 290px;
+  height: 260px;
   margin-bottom: 5px;
 `
 
