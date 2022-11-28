@@ -15,7 +15,10 @@ import { useSelector } from 'react-redux'
 import Bubble from '../components/Bubble'
 import ReplyTo from '../components/ReplyTo'
 import { createChat } from '../services/chat/createChat'
-import { createMessage } from '../services/message/createMessage'
+import {
+  createMessage,
+  createImageMessage,
+} from '../services/message/createMessage'
 import { launchImagePicker } from '../utils/imagePicker'
 import AwesomeAlert from 'react-native-awesome-alerts'
 import { uploadChatImg } from '../services/upload'
@@ -103,6 +106,31 @@ const ChatScreen = ({ route, navigation }) => {
     setMessage('')
   }, [message])
 
+  const handleSendImageMessage = useCallback(
+    async imageUrl => {
+      try {
+        // 尚未建立聊天室
+        if (!chatId) {
+          const newChatId = await createChat(selfUserData.userId, chatData)
+          setChatId(newChatId)
+        }
+
+        // 儲存 image message 到 db
+        await createImageMessage(
+          chatId,
+          selfUserData.userId,
+          imageUrl,
+          replyingTo?.id
+        )
+      } catch (error) {
+        console.log(error)
+        setErrorBannerText('Message failed to send')
+        setTimeout(() => setErrorBannerText(''), 5000)
+      }
+    },
+    [chatId, selfUserData, replyingTo]
+  )
+
   const handleScrollToEnd = () =>
     isMessageChange && flatListRef.current.scrollToEnd({ animated: false })
 
@@ -125,7 +153,8 @@ const ChatScreen = ({ route, navigation }) => {
   const uploadImage = useCallback(async () => {
     setIsLoading(true)
     try {
-      await uploadChatImg(chatId, tempImageUri)
+      const url = await uploadChatImg(chatId, tempImageUri)
+      await handleSendImageMessage(url)
       setIsLoading(false)
       setTempImageUri('')
     } catch (error) {
