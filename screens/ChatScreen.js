@@ -203,7 +203,8 @@ const ChatScreen = ({ route, navigation }) => {
               <FlatList
                 ref={flatListRef}
                 data={messageList}
-                onContentSizeChange={data => handleScrollToEnd(data)}
+                onLayout={handleScrollToEnd}
+                onContentSizeChange={handleScrollToEnd}
                 renderItem={itemData => {
                   const message = itemData.item
                   const messageType = message.isMe
