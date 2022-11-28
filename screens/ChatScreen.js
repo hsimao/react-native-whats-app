@@ -155,8 +155,10 @@ const ChatScreen = ({ route, navigation }) => {
     try {
       const url = await uploadChatImg(chatId, tempImageUri)
       await handleSendImageMessage(url)
+
       setIsLoading(false)
       setTempImageUri('')
+      setReplyingTo(null)
     } catch (error) {
       setIsLoading(false)
       console.log(error)
@@ -198,6 +200,7 @@ const ChatScreen = ({ route, navigation }) => {
                       type={messageType}
                       date={message.sendAt}
                       messageId={message.id}
+                      imageUrl={message.imageUrl}
                       userId={selfUserData.userId}
                       chatId={chatId}
                       replyingTo={replyingTo}

@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import { View, TouchableWithoutFeedback } from 'react-native'
 import styled from 'styled-components/native'
 import { colors } from '../theme/colors'
@@ -35,6 +35,12 @@ const BaseText = styled.Text`
   ${({ color }) => (color ? `color: ${color}` : '')};
 `
 
+const Image = styled.Image`
+  width: 300px;
+  height: 300px;
+  margin-bottom: 5px;
+`
+
 const Name = styled.Text`
   font-family: medium;
   letter-spacing: 0.3px;
@@ -67,6 +73,7 @@ const Bubble = ({
   date,
   type,
   messageId,
+  imageUrl,
   userId,
   chatId,
   replyingTo,
@@ -140,6 +147,10 @@ const Bubble = ({
 
   const amOrPmTime = date && formatAmPm(date)
 
+  useEffect(() => {
+    console.log('watch imageUrl', imageUrl)
+  }, [imageUrl])
+
   return (
     <Container position={position} type={type}>
       <TouchWrapper
@@ -164,9 +175,15 @@ const Bubble = ({
           {/* user name */}
           {name && <Name>{name}</Name>}
 
-          <BaseText color={textColor} position={textPosition}>
-            {text}
-          </BaseText>
+          {/* Text message */}
+          {!imageUrl && (
+            <BaseText color={textColor} position={textPosition}>
+              {text}
+            </BaseText>
+          )}
+
+          {/* Image message */}
+          {imageUrl && <Image source={{ uri: imageUrl }} />}
 
           {/* star、time */}
           <SubContent>
