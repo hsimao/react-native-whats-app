@@ -1,5 +1,12 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { Platform, FlatList, Keyboard, View, Image } from 'react-native'
+import {
+  Platform,
+  FlatList,
+  Keyboard,
+  View,
+  Image,
+  ActivityIndicator,
+} from 'react-native'
 import styled from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
@@ -11,6 +18,7 @@ import { createChat } from '../services/chat/createChat'
 import { createMessage } from '../services/message/createMessage'
 import { launchImagePicker } from '../utils/imagePicker'
 import AwesomeAlert from 'react-native-awesome-alerts'
+import { uploadChatImg } from '../services/upload'
 
 const ChatScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null)
@@ -21,6 +29,7 @@ const ChatScreen = ({ route, navigation }) => {
   const [errorBannerText, setErrorBannerText] = useState('')
   const [replyingTo, setReplyingTo] = useState()
   const [tempImageUri, setTempImageUri] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const tempUsers = useSelector(state => state.user.tempUsers)
   const selfUserData = useSelector(state => state.auth.userData)
@@ -101,13 +110,30 @@ const ChatScreen = ({ route, navigation }) => {
     try {
       const tempUri = await launchImagePicker()
       if (!tempUri) return
-      console.log('tempUri', tempUri)
-
       setTempImageUri(tempUri)
     } catch (error) {
       console.log(error)
     }
   }, [])
+
+  const showAlertImage = useMemo(
+    () => !isLoading && tempImageUri,
+    [isLoading, tempImageUri]
+  )
+
+  // upldate image
+  const uploadImage = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      await uploadChatImg(chatId, tempImageUri)
+      setIsLoading(false)
+      setTempImageUri('')
+    } catch (error) {
+      setIsLoading(false)
+      console.log(error)
+    }
+  }, [chatId, tempImageUri])
+
   return (
     <Container>
       <KeyboardAvoidingViewStyle>
@@ -191,7 +217,7 @@ const ChatScreen = ({ route, navigation }) => {
           )}
 
           <AwesomeAlert
-            show={!!tempImageUri}
+            show={tempImageUri !== ''}
             title="Send image?"
             closeOnTouchOutside
             closeOnHardwareBackPress={false}
@@ -201,15 +227,21 @@ const ChatScreen = ({ route, navigation }) => {
             confirmText="Send image"
             confirmButtonColor={colors.primary}
             cancelButtonColor={colors.red}
-            onConfirmPressed={() => console.log('upload!')}
+            onConfirmPressed={uploadImage}
             onCancelPressed={() => setTempImageUri('')}
             onDismiss={() => setTempImageUri('')}
             customView={
               <View>
-                <Image
-                  source={{ uri: tempImageUri }}
-                  style={{ width: 200, height: 200 }}
-                />
+                {isLoading && (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                )}
+
+                {showAlertImage && (
+                  <Image
+                    source={{ uri: tempImageUri }}
+                    style={{ width: 200, height: 200 }}
+                  />
+                )}
               </View>
             }
             titleStyle={{

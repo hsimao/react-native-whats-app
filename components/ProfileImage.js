@@ -4,7 +4,7 @@ import styled from 'styled-components/native'
 import { FontAwesome } from '@expo/vector-icons'
 import { launchImagePicker } from '../utils/imagePicker'
 import userImage from '../assets/images/userImage.jpeg'
-import { uploadAvatar } from '../services/upload/uploadAvatar'
+import { uploadAvatar } from '../services/upload'
 import { updateUser } from '../services/users/updateUser'
 import { colors } from '../theme/colors'
 
